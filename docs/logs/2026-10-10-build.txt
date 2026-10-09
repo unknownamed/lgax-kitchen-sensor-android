@@ -1,0 +1,8 @@
+Run: https://github.com/unknownamed/lgax-kitchen-sensor-android/actions/runs/37987982977
+Commit: 7371e18424f30f420f9c569be45e21c67572e130
+Source: selected original GitHub Actions log lines
+Timestamps: UTC (2026-10-10 morning in Korea)
+
+esp32	Compile sensor firmware	2026-10-09T20:36:25.6488547Z Sketch uses 943328 bytes (71%) of program storage space. Maximum is 1310720 bytes.
+esp32	Compile sensor firmware	2026-10-09T20:36:25.6489365Z Global variables use 46132 bytes (14%) of dynamic memory, leaving 281548 bytes for local variables. Maximum is 327680 bytes.
+android	Build APK and check Android source	2026-10-09T20:36:13.1720305Z BUILD SUCCESSFUL in 52s
