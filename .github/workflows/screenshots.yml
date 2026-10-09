@@ -17,7 +17,7 @@ jobs:
           distribution: temurin
           java-version: '17'
       - name: Build updated Android app
-        run: ./gradlew assembleDebug lintDebug --no-daemon
+        run: ./gradlew testDebugUnitTest assembleDebug lintDebug --no-daemon
       - name: Enable emulator acceleration
         run: sudo chmod a+rw /dev/kvm
       - uses: reactivecircus/android-emulator-runner@v2

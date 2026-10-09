@@ -30,6 +30,7 @@
     <string name="record_failed">기록 실패: %1$s</string>
     <string name="no_records">저장된 기록이 없습니다.</string>
     <string name="export_saved">CSV 저장 완료</string>
+    <string name="export_cancelled">CSV 저장을 취소했습니다. 내부 기록은 유지됩니다.</string>
     <string name="export_failed">CSV 저장 실패: %1$s</string>
     <string name="subtitle">건조대 주변을 확인하고 기록하세요.</string>
     <string name="version_badge">초기 개발 · v0.1.1</string>

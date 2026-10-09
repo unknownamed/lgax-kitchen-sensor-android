@@ -7,11 +7,13 @@ final class SensorReading {
     final double temperature;
     final double humidity;
     final int lightAdc;
+    final long sampleAgeMs;
 
-    private SensorReading(double temperature, double humidity, int lightAdc) {
+    private SensorReading(double temperature, double humidity, int lightAdc, long sampleAgeMs) {
         this.temperature = temperature;
         this.humidity = humidity;
         this.lightAdc = lightAdc;
+        this.sampleAgeMs = sampleAgeMs;
     }
 
     static SensorReading parse(String body) throws JSONException {
@@ -23,12 +25,20 @@ final class SensorReading {
         double humidity = json.getDouble("humidity_percent");
         int lightAdc = json.getInt("light_adc");
         long sampleAge = json.getLong("sample_age_ms");
+        try {
+            return validated(temperature, humidity, lightAdc, sampleAge);
+        } catch (IllegalArgumentException error) {
+            throw new JSONException(error.getMessage());
+        }
+    }
+
+    static SensorReading validated(double temperature, double humidity, int lightAdc, long sampleAge) {
         if (!Double.isFinite(temperature) || temperature < -40 || temperature > 80
                 || !Double.isFinite(humidity) || humidity < 0 || humidity > 100
                 || lightAdc < 0 || lightAdc > 4095 || sampleAge < 0 || sampleAge > 10000) {
-            throw new JSONException("센서 범위 오류 또는 오래된 측정값");
+            throw new IllegalArgumentException("센서 범위 오류 또는 오래된 측정값");
         }
-        return new SensorReading(temperature, humidity, lightAdc);
+        return new SensorReading(temperature, humidity, lightAdc, sampleAge);
     }
 
     int dryingIndex() {
