@@ -8,6 +8,7 @@ import xml.etree.ElementTree as ET
 PACKAGE = "com.unknownamed.dishdry"
 OUTPUT = Path("app/build/screenshots")
 OUTPUT.mkdir(parents=True, exist_ok=True)
+dump_number = 0
 
 
 def adb(*args):
@@ -15,8 +16,12 @@ def adb(*args):
 
 
 def hierarchy():
-    adb("shell", "uiautomator", "dump", "/sdcard/dishdry-ui.xml")
-    adb("pull", "/sdcard/dishdry-ui.xml", str(OUTPUT / "last-ui.xml"))
+    global dump_number
+    dump_number += 1
+    remote = f"/sdcard/dishdry-ui-{dump_number}.xml"
+    dumped = adb("shell", "uiautomator", "dump", remote)
+    assert "dumped to" in dumped, dumped
+    adb("pull", remote, str(OUTPUT / "last-ui.xml"))
     return ET.parse(OUTPUT / "last-ui.xml").getroot()
 
 
@@ -54,8 +59,8 @@ time.sleep(2)
 assert node("toggle").get("text") == "측정 시작"
 screenshot("01-overview.png")
 tap(node("toggle"))
-assert node("toggle").get("text") == "측정 중지"
 screenshot("02-measuring.png")
+assert node("toggle").get("text") == "측정 중지"
 scroll_to_records()
 assert node("record_count").get("text") == "0개"
 tap(node("save"))

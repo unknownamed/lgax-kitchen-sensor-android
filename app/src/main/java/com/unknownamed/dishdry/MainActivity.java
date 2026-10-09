@@ -215,7 +215,8 @@ public class MainActivity extends Activity implements SensorEventListener {
     }
 
     private void text(int id, String value) {
-        ((TextView) findViewById(id)).setText(value);
+        TextView view = findViewById(id);
+        if (!value.contentEquals(view.getText())) view.setText(value);
     }
 
     private String number(Number value) {
