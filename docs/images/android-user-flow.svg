@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="810" viewBox="0 0 1280 810">
+  <style>
+    text { font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; fill: #222; }
+    .title { font-size: 25px; font-weight: 700; }
+    .step { font-size: 18px; font-weight: 700; }
+    .body { font-size: 15px; }
+    .small { font-size: 12px; }
+    .screen { fill: #fff; stroke: #333; stroke-width: 2; }
+    .field { fill: #fff; stroke: #777; }
+    .button { fill: #eee; stroke: #777; }
+    .note { fill: #f4f4f4; stroke: #999; stroke-dasharray: 5 4; }
+    .line { stroke: #aaa; }
+    .arrow { fill: none; stroke: #555; stroke-width: 2; }
+  </style>
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0 0 L8 4 L0 8 Z" fill="#555"/>
+    </marker>
+  </defs>
+  <rect width="1280" height="810" fill="#fafafa"/>
+  <text x="32" y="43" class="title">접시 건조 센서 · 사용 흐름 와이어프레임</text>
+  <text x="32" y="71" class="body">기본 Android 위젯 한 화면과 시스템 파일 선택기로 구성 · 수치 영역은 측정값 자리 표시</text>
+
+  <text x="32" y="117" class="step">1. 센서 연결 준비</text>
+  <text x="352" y="117" class="step">2. 실제 센서값 확인</text>
+  <text x="672" y="117" class="step">3. 현재 값 기록</text>
+  <text x="992" y="117" class="step">4. CSV 내보내기</text>
+  <path d="M299 365 H330" class="arrow" marker-end="url(#arrowhead)"/>
+  <path d="M619 365 H650" class="arrow" marker-end="url(#arrowhead)"/>
+  <path d="M939 365 H970" class="arrow" marker-end="url(#arrowhead)"/>
+
+  <g transform="translate(32 140)">
+    <rect width="260" height="475" rx="14" class="screen"/>
+    <rect x="105" y="10" width="50" height="5" rx="2" fill="#aaa"/>
+    <text x="16" y="45" class="step">접시 건조 센서 v0.1</text>
+    <text x="16" y="67" class="small">LG AX · 키친에서 치킨먹기</text>
+    <text x="16" y="84" class="small">개발: 황대겸</text>
+    <text x="16" y="117" class="small">ESP32 측정 주소 (선택)</text>
+    <rect x="16" y="126" width="228" height="38" class="field"/>
+    <text x="24" y="149" class="small">http://192.168.4.1/readings</text>
+    <rect x="16" y="177" width="228" height="39" class="button"/>
+    <text x="130" y="202" text-anchor="middle" class="body">측정 시작</text>
+    <text x="16" y="242" class="small">측정 중지됨</text>
+    <text x="16" y="276" class="body">주변 온도: 미측정</text>
+    <text x="16" y="302" class="body">주변 습도: 미측정</text>
+    <text x="16" y="329" class="small">빛 ADC / 휴대폰 센서: 미측정</text>
+    <text x="16" y="360" class="body">실험용 건조 지수: 미측정</text>
+    <rect x="16" y="382" width="228" height="34" class="button"/>
+    <text x="130" y="404" text-anchor="middle" class="body">현재 값 기록</text>
+    <rect x="16" y="428" width="228" height="34" class="button"/>
+    <text x="130" y="450" text-anchor="middle" class="body">CSV 내보내기</text>
+  </g>
+
+  <g transform="translate(352 140)">
+    <rect width="260" height="475" rx="14" class="screen"/>
+    <rect x="105" y="10" width="50" height="5" rx="2" fill="#aaa"/>
+    <text x="16" y="45" class="step">접시 건조 센서 v0.1</text>
+    <text x="16" y="67" class="small">LG AX · 키친에서 치킨먹기</text>
+    <text x="16" y="84" class="small">개발: 황대겸</text>
+    <text x="16" y="117" class="small">ESP32 측정 주소</text>
+    <rect x="16" y="126" width="228" height="38" class="button"/>
+    <text x="24" y="149" class="small">http://192.168.4.1/readings</text>
+    <rect x="16" y="177" width="228" height="39" class="button"/>
+    <text x="130" y="202" text-anchor="middle" class="body">측정 중지</text>
+    <text x="16" y="242" class="small">ESP32 수신: [수신 시각]</text>
+    <text x="16" y="276" class="body">주변 온도: [측정값] °C</text>
+    <text x="16" y="302" class="body">주변 습도: [측정값] %</text>
+    <text x="16" y="329" class="small">빛 ADC / 휴대폰 센서: [측정값]</text>
+    <text x="16" y="360" class="body">건조 지수: [점수] / 100</text>
+    <rect x="16" y="382" width="228" height="34" class="button"/>
+    <text x="130" y="404" text-anchor="middle" class="body">현재 값 기록</text>
+    <rect x="16" y="428" width="228" height="34" class="button"/>
+    <text x="130" y="450" text-anchor="middle" class="body">CSV 내보내기</text>
+  </g>
+
+  <g transform="translate(672 140)">
+    <rect width="260" height="475" rx="14" class="screen"/>
+    <rect x="105" y="10" width="50" height="5" rx="2" fill="#aaa"/>
+    <text x="16" y="45" class="step">접시 건조 센서 v0.1</text>
+    <text x="16" y="67" class="small">같은 측정 화면에서 기록 버튼 누르기</text>
+    <rect x="16" y="93" width="228" height="38" class="button"/>
+    <text x="130" y="117" text-anchor="middle" class="body">측정 중지</text>
+    <text x="16" y="162" class="body">온도 / 습도 / 빛 ADC</text>
+    <text x="16" y="195" class="body">휴대폰 조도 / 움직임</text>
+    <text x="16" y="228" class="body">실험용 건조 지수</text>
+    <line x1="16" y1="250" x2="244" y2="250" class="line"/>
+    <text x="16" y="279" class="small">누른 시점의 유효한 값만 한 줄 저장</text>
+    <rect x="16" y="309" width="228" height="40" fill="#ddd" stroke="#333" stroke-width="2"/>
+    <text x="130" y="335" text-anchor="middle" class="body">현재 값 기록</text>
+    <rect x="16" y="363" width="228" height="36" class="button"/>
+    <text x="130" y="386" text-anchor="middle" class="body">CSV 내보내기</text>
+    <rect x="18" y="421" width="224" height="35" rx="8" fill="#444"/>
+    <text x="130" y="444" text-anchor="middle" font-family="sans-serif" font-size="13" style="fill:#fff">측정값을 저장했습니다.</text>
+  </g>
+
+  <g transform="translate(992 140)">
+    <rect width="260" height="475" rx="14" class="screen"/>
+    <rect x="105" y="10" width="50" height="5" rx="2" fill="#aaa"/>
+    <text x="16" y="46" class="step">CSV 저장 위치 선택</text>
+    <text x="16" y="72" class="small">Android 시스템 파일 선택기</text>
+    <line x1="16" y1="91" x2="244" y2="91" class="line"/>
+    <text x="16" y="127" class="body">저장할 폴더</text>
+    <rect x="16" y="146" width="228" height="110" class="field"/>
+    <text x="32" y="181" class="body">[선택한 저장 위치]</text>
+    <text x="32" y="219" class="small">시스템에서 위치를 선택</text>
+    <text x="16" y="297" class="body">파일 이름</text>
+    <rect x="16" y="313" width="228" height="40" class="field"/>
+    <text x="24" y="339" class="body">dish-dry-readings.csv</text>
+    <rect x="136" y="382" width="108" height="39" class="button"/>
+    <text x="190" y="407" text-anchor="middle" class="body">저장</text>
+    <text x="16" y="451" class="small">저장 후 앱에 완료 메시지 표시</text>
+  </g>
+
+  <g transform="translate(32 642)">
+    <rect width="260" height="123" class="note"/>
+    <text x="14" y="29" class="body">ESP32 Wi-Fi에 먼저 연결</text>
+    <text x="14" y="55" class="small">주소를 비우면 휴대폰 센서만 측정</text>
+    <text x="14" y="81" class="small">지원하지 않는 센서는 센서 없음 표시</text>
+  </g>
+  <g transform="translate(352 642)">
+    <rect width="260" height="123" class="note"/>
+    <text x="14" y="29" class="body">외부 센서는 5초마다 읽기</text>
+    <text x="14" y="55" class="small">실패·오래된 값은 미측정으로 표시</text>
+    <text x="14" y="81" class="small">건조 지수는 보정 전 임시 계산</text>
+  </g>
+  <g transform="translate(672 642)">
+    <rect width="260" height="123" class="note"/>
+    <text x="14" y="29" class="body">CSV는 앱 내부에 누적</text>
+    <text x="14" y="55" class="small">측정하지 않은 항목은 빈칸으로 기록</text>
+    <text x="14" y="81" class="small">유효한 값이 없으면 저장하지 않음</text>
+  </g>
+  <g transform="translate(992 642)">
+    <rect width="260" height="123" class="note"/>
+    <text x="14" y="29" class="body">파일 선택 중에는 측정 중지</text>
+    <text x="14" y="55" class="small">앱에 돌아오면 측정 시작을 다시 누르기</text>
+    <text x="14" y="81" class="small">원본 기록은 앱 내부에 유지</text>
+  </g>
+</svg>
