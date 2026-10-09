@@ -18,6 +18,43 @@
 
 일단 센서 수치를 읽고 저장하는 단계부터 구현했습니다. 현재 환경 점수가 실제 접시의 물기와 연결되는지는 확인하지 못했습니다. 그래서 앱에서도 건조 완료 판정 대신 실험용 지수를 표시합니다.
 
+## 구조도
+
+```mermaid
+flowchart TD
+    subgraph rack["접시 건조대 옆 센서"]
+        DHT["DHT22 온습도 센서"]
+        LDR["LDR 빛 센서 + 10kΩ 저항"]
+        ESP["ESP32 펌웨어 · 3초마다 측정"]
+        API["Wi-Fi AP · GET /readings"]
+        DHT -->|GPIO4| ESP
+        LDR -->|GPIO34 · ADC| ESP
+        ESP -->|"온도·습도·빛 ADC·측정 경과 시간"| API
+    end
+
+    subgraph phone["Android 앱 · Java / 기본 위젯"]
+        MAIN["MainActivity · 측정 시작/중지"]
+        PARSE["SensorReading · 범위와 측정 시간 검사"]
+        SCREEN["측정값 표시"]
+        INDEX["임시 건조 지수 · 0~100"]
+        PHONE["휴대폰 조도·가속도 센서"]
+        FILE["현재 값 기록 · 앱 내부 readings.csv"]
+        EXPORT["시스템 파일 선택기로 CSV 내보내기"]
+        MAIN --> PARSE
+        PARSE --> SCREEN
+        PARSE --> INDEX
+        INDEX --> SCREEN
+        PHONE -->|"실제 센서 이벤트"| MAIN
+        MAIN -->|"휴대폰 조도·움직임"| SCREEN
+        SCREEN -->|"기록 버튼을 누른 시점의 값"| FILE
+        FILE --> EXPORT
+    end
+
+    API -->|"같은 Wi-Fi · HTTP JSON · 5초마다 읽기"| MAIN
+```
+
+외부 센서의 온습도와 빛 ADC만 임시 건조 지수에 사용합니다. 휴대폰 센서는 별도로 수치와 기록에 표시합니다. 연결 실패나 오래된 외부 측정값은 미측정으로 처리하며, 모든 기록은 앱 내부에 저장합니다.
+
 ## 지금 구현된 것
 
 - ESP32의 DHT22 온습도와 LDR 빛 센서 측정값을 HTTP로 읽기
