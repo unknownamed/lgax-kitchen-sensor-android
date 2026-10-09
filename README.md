@@ -6,19 +6,21 @@
 
 주방 UX/UI 시나리오를 소재로 만드는 작은 안드로이드 앱입니다. 접시 건조대 옆에 온습도·빛 센서를 붙이고, 주변 수치만으로 건조 정도를 대략 계산해 보려는 초기 구현입니다.
 
-![접시 건조대의 온습도·빛 센서, ESP32 보드와 Android 앱 구성 스케치](docs/images/dishdry-sensor-sketch.png)
+![접시 건조대의 온습도·빛 센서, ESP32 보드와 새 Android 화면 구성 개념도](docs/images/dishdry-sensor-sketch.png)
 
-*접시 건조대 옆 센서와 앱을 연결하는 구성 스케치.*
+*접시 건조대 옆 센서와 v0.2.0 앱을 연결하는 구성 개념도. 실물 장치 실행 사진이 아닙니다.*
 
 ## 앱 실제 실행 화면
 
-v0.1.1 APK를 Android API 30 에뮬레이터에서 실행한 원본 캡처입니다. 연결·센서·지수·기록을 카드로 배치했습니다. ESP32는 연결하지 않았고, 기록 1개는 에뮬레이터의 가상 휴대폰 센서 값으로 저장한 것입니다.
+v0.2.0 APK를 Android API 30 에뮬레이터에서 실행한 원본 캡처입니다. 흰색 카드, 연회색 바탕, 파란색 캡슐 버튼과 큰 지수를 적용했습니다. ESP32는 연결하지 않았고, 기록 1개는 에뮬레이터의 가상 휴대폰 센서 값으로 저장한 것입니다.
 
 | 연결 대기 | 현재 값 기록 | 시스템 CSV 저장 |
 | --- | --- | --- |
 | <img src="docs/images/screenshots/01-overview.png" width="230" alt="실제 앱 연결 대기 화면"> | <img src="docs/images/screenshots/03-record-saved.png" width="230" alt="실제 앱에서 가상 휴대폰 센서 값 한 건을 기록한 화면"> | <img src="docs/images/screenshots/04-system-export.png" width="230" alt="Android 시스템 파일 선택기의 CSV 저장 화면"> |
 
-앱 실행, 측정 시작, 현재 값 기록, CSV 저장 화면과 앱 복귀, 재시작 후 기록 유지를 확인했습니다. [전체 실행 캡처](docs/images/screenshots), [실행 결과 원문](docs/logs/2026-10-10-android-emulator.txt), [실행 일지](docs/RUN_LOG.md).
+앱 실행, 현재 값 기록, CSV 실제 파일 내용 일치, 저장·취소 후 앱 복귀, 재시작 후 기록 유지, 320dp 너비·130% 글자 크기를 확인했습니다. [전체 실행 캡처 8장](docs/images/screenshots), [실행 결과 원문](docs/logs/2026-10-10-v0.2.0-android-emulator.txt), [실행 일지](docs/RUN_LOG.md).
+
+화면의 색상과 여백은 내려받은 [Apple 웹디자인 분석 DESIGN.md](DESIGN.md)를 참고했습니다. 공식 Apple 디자인 문서는 아니며, Android 기본 글꼴과 위젯에 맞게 적용했습니다. [적용 기준과 출처](docs/DESIGN_NOTES.md).
 
 ## 주제의 흐름
 
@@ -47,24 +49,38 @@ flowchart TD
     end
 
     subgraph phone["Android 앱 · Java / 기본 위젯"]
-        MAIN["MainActivity · 측정 시작/중지"]
+        MAIN["MainActivity · 버튼과 화면 생명주기"]
+        CONTROL["MeasurementController · 5초 폴링·센서 등록"]
+        HTTP["SensorHttpClient · 주소·시간·응답 크기 검사"]
         PARSE["SensorReading · 범위와 측정 시간 검사"]
-        SCREEN["측정값 표시"]
+        STATE["MeasurementState · 오래된 값 제외"]
+        SNAP["ReadingSnapshot · 기록 시점의 값"]
+        SCREEN["DashboardView · 바뀐 표시만 갱신"]
         INDEX["임시 건조 지수 · 0~100"]
         PHONE["휴대폰 조도·가속도 센서"]
-        FILE["현재 값 기록 · 앱 내부 readings.csv"]
+        FILE["RecordStore · 백그라운드 CSV 읽기·쓰기"]
         EXPORT["시스템 파일 선택기로 CSV 내보내기"]
-        MAIN --> PARSE
-        PARSE --> SCREEN
+        MAIN --> CONTROL
+        CONTROL --> HTTP
+        HTTP --> PARSE
+        PARSE --> STATE
+        STATE --> SNAP
+        SNAP --> SCREEN
         PARSE --> INDEX
         INDEX --> SCREEN
-        PHONE -->|"실제 센서 이벤트"| MAIN
-        MAIN -->|"휴대폰 조도·움직임"| SCREEN
-        SCREEN -->|"기록 버튼을 누른 시점의 값"| FILE
+        PHONE -->|"실제 센서 이벤트"| CONTROL
+        CONTROL --> STATE
+        SNAP -->|"버튼을 누른 시점의 유효한 값"| FILE
         FILE --> EXPORT
     end
 
-    API -->|"같은 Wi-Fi · HTTP JSON · 5초마다 읽기"| MAIN
+    API -->|"같은 Wi-Fi · HTTP JSON"| HTTP
+    classDef device fill:#ffffff,stroke:#d2d2d7,color:#1d1d1f
+    classDef app fill:#ffffff,stroke:#0066cc,color:#1d1d1f
+    class DHT,LDR,ESP,API device
+    class MAIN,CONTROL,HTTP,PARSE,STATE,SNAP,SCREEN,INDEX,PHONE,FILE,EXPORT app
+    style rack fill:#f5f5f7,stroke:#d2d2d7,color:#1d1d1f
+    style phone fill:#f5f5f7,stroke:#d2d2d7,color:#1d1d1f
 ```
 
 외부 센서의 온습도와 빛 ADC만 임시 건조 지수에 사용합니다. 휴대폰 센서는 별도로 수치와 기록에 표시합니다. 연결 실패나 오래된 외부 측정값은 미측정으로 처리하며, 모든 기록은 앱 내부에 저장합니다.
@@ -75,7 +91,7 @@ flowchart TD
 
 ![센서 Wi-Fi 연결, 측정값 확인, 현재 값 기록, CSV 저장으로 이어지는 4컷 사용 시나리오](docs/images/user-scenario.png)
 
-*사용 과정을 설명하는 4컷 스케치. 건조 지수는 접시의 실제 건조 완료를 판정하지 않습니다.*
+*새 화면 디자인으로 맞춘 4컷 개념 시나리오. 대시와 대괄호는 자리 표시이며, 실물 센서 실행 기록이 아닙니다.*
 
 ## 화면 와이어프레임과 사용 흐름
 
@@ -96,17 +112,18 @@ flowchart TD
 - 버튼을 누른 시점의 측정값을 앱 내부에 기록하고 CSV로 내보내기
 - 연결 실패, 센서 미지원, 센서 읽기 실패 표시
 
-화면은 기본 Android 위젯으로 만든 한 페이지입니다. 연결·지수·외부 센서·휴대폰 센서·기록을 카드로 배치하고 기록 개수와 최근 기록 시각을 표시합니다. ESP32 수치는 5초마다 읽고, 실제로 수신한 값만 표시합니다. 센서를 연결하지 않으면 해당 항목은 미측정으로 남습니다. 외부 센서 없이 휴대폰 센서만 켤 수도 있습니다.
+화면은 기본 Android 위젯으로 만든 한 페이지입니다. 지수·연결·외부 센서·휴대폰 센서·기록을 카드로 배치하고 기록 개수와 최근 기록 시각을 표시합니다. 화면 표시, 측정 상태, HTTP 요청, CSV 저장을 분리했습니다. CSV 읽기·쓰기·내보내기는 백그라운드에서 실행합니다. ESP32 수치는 5초마다 읽고, 실제로 수신한 값만 표시합니다. 센서를 연결하지 않으면 해당 항목은 미측정으로 남습니다. 외부 센서 없이 휴대폰 센서만 켤 수도 있습니다.
 
 ## 개발 단계
 
-v0.1.1. 앱과 ESP32 펌웨어를 구현한 상태입니다. 실제 건조대에서의 보정, 접시 물기와의 상관관계, 여러 휴대폰에서의 동작은 아직 확인하지 않았습니다. 주변 습도와 밝기가 접시의 건조 완료를 나타낸다는 가정도 검증 전입니다.
+v0.2.0. 앱과 ESP32 펌웨어를 구현한 상태입니다. 실제 건조대에서의 보정, 접시 물기와의 상관관계, 여러 휴대폰에서의 동작은 아직 확인하지 않았습니다. 주변 습도와 밝기가 접시의 건조 완료를 나타낸다는 가정도 검증 전입니다.
 
 건조 지수는 임의 가중치의 환경 점수입니다. 접시 표면 수분이나 건조 완료를 직접 측정하는 값은 아닙니다. 환기, 식기 재질, 물방울 크기 등을 반영하지 못합니다.
 
 ## 간단한 작업 문서
 
 - [간단 명세](docs/SPEC.md) — 화면·버튼, 센서 연결, HTTP 응답, CSV 열 정리
+- [화면 기준과 코드 구조](docs/DESIGN_NOTES.md) — DESIGN.md 출처, Android 적용, 파일별 책임
 - [개발·실행 기록](docs/RUN_LOG.md) — 빌드 출력과 실물 장치 확인 항목
 - [개발 메모와 남은 작업](docs/TODO.md) — 구현한 코드와 기기에서 확인할 항목
 

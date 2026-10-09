@@ -1,0 +1,15 @@
+Source build: https://github.com/unknownamed/lgax-kitchen-sensor-android/actions/runs/37993503219
+Source unit-test XML: android-running-screens artifact of run 37993503217
+Commit: fafc08b5ba2ea982e3c83e01e75cef539d252a7c
+Original timestamps are UTC.
+
+esp32	Compile sensor firmware	2026-10-09T21:28:04.5584275Z Sketch uses 943328 bytes (71%) of program storage space. Maximum is 1310720 bytes.
+esp32	Compile sensor firmware	2026-10-09T21:28:04.5585550Z Global variables use 46132 bytes (14%) of dynamic memory, leaving 281548 bytes for local variables. Maximum is 327680 bytes.
+android	Build APK and check Android source	2026-10-09T21:27:41.2621528Z > Task :app:testDebugUnitTest
+android	Build APK and check Android source	2026-10-09T21:27:51.2620955Z BUILD SUCCESSFUL in 48s
+
+Original test-suite XML lines:
+<testsuite name="com.unknownamed.dishdry.MeasurementStateTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-09T21:27:41" hostname="runnervmmprz5" time="0.003">
+<testsuite name="com.unknownamed.dishdry.RecordStoreTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-10-09T21:27:41" hostname="runnervmmprz5" time="0.019">
+<testsuite name="com.unknownamed.dishdry.SensorHttpClientTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-10-09T21:27:41" hostname="runnervmmprz5" time="0.003">
+<testsuite name="com.unknownamed.dishdry.SensorReadingTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-10-09T21:27:41" hostname="runnervmmprz5" time="0.001">
