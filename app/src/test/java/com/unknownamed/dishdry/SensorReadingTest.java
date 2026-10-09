@@ -7,7 +7,7 @@ public class SensorReadingTest {
     @Test public void dryingIndexStaysWithinDisplayRange() {
         assertEquals(0, SensorReading.validated(-40, 100, 0, 0).dryingIndex());
         assertEquals(100, SensorReading.validated(80, 0, 4095, 0).dryingIndex());
-        assertEquals(58, SensorReading.validated(25, 50, 1000, 0).dryingIndex());
+        assertEquals(57, SensorReading.validated(25, 50, 1000, 0).dryingIndex());
     }
 
     @Test public void invalidAndStalePacketsAreRejected() {

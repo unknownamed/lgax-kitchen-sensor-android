@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="page">#F3F5F5</color>
+    <color name="page">#F5F5F7</color>
     <color name="surface">#FFFFFF</color>
-    <color name="ink">#223536</color>
-    <color name="muted">#637778</color>
-    <color name="accent">#2C6261</color>
-    <color name="line">#DDE5E4</color>
-    <color name="soft">#EAF1EF</color>
-    <color name="disabled">#DFE6E5</color>
+    <color name="ink">#1D1D1F</color>
+    <color name="muted">#6E6E73</color>
+    <color name="accent">#0066CC</color>
+    <color name="accent_pressed">#004F9F</color>
+    <color name="focus">#0071E3</color>
+    <color name="line">#D2D2D7</color>
+    <color name="soft">#FAFAFC</color>
+    <color name="disabled">#E8E8ED</color>
 </resources>

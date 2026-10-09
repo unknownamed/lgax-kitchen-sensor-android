@@ -32,6 +32,16 @@ def node(view_id):
     raise AssertionError(f"View is not visible: {view_id}")
 
 
+def wait_node(view_id, text=None, enabled=None):
+    for _ in range(8):
+        element = node(view_id)
+        if (text is None or element.get("text") == text) and (
+                enabled is None or element.get("enabled") == str(enabled).lower()):
+            return element
+        time.sleep(0.5)
+    raise AssertionError(f"Unexpected view state: {element.attrib}")
+
+
 def tap(element):
     assert element.get("enabled") == "true", element.attrib
     x1, y1, x2, y2 = map(int, re.findall(r"\d+", element.get("bounds")))
@@ -47,7 +57,15 @@ def screenshot(name):
 def scroll_to_records():
     size = adb("shell", "wm", "size")
     width, height = map(int, re.findall(r"(\d+)x(\d+)", size)[-1])
-    for _ in range(3):
+    for _ in range(10):
+        visible = {element.get("resource-id").split("/")[-1]: element
+                   for element in hierarchy().iter("node")}
+        required = ("record_count", "save", "export")
+        if all(name in visible for name in required):
+            bounds = [list(map(int, re.findall(r"\d+", visible[name].get("bounds"))))
+                      for name in required]
+            if all(box[1] >= 60 and box[3] <= height - 90 for box in bounds):
+                return
         adb("shell", "input", "swipe", str(width // 2), str(height * 3 // 4),
             str(width // 2), str(height // 4), "350")
         time.sleep(0.5)
@@ -64,7 +82,7 @@ assert node("toggle").get("text") == "측정 중지"
 scroll_to_records()
 assert node("record_count").get("text") == "0개"
 tap(node("save"))
-assert node("record_count").get("text") == "1개"
+wait_node("record_count", text="1개")
 screenshot("03-record-saved.png")
 csv = adb("shell", "run-as", PACKAGE, "cat", "files/readings.csv")
 assert len(csv.splitlines()) == 2, csv
@@ -76,15 +94,34 @@ buttons = [element for element in hierarchy().iter("node")
            and element.get("clickable") == "true"]
 assert buttons, "System save button not found"
 tap(buttons[-1])
-assert node("record_count").get("text") == "1개"
-assert node("export").get("enabled") == "true"
+wait_node("record_count", text="1개")
+wait_node("export", enabled=True)
+exported = adb("shell", "cat", "/sdcard/Download/dish-dry-readings.csv")
+assert exported == csv, "Exported CSV does not match the internal file"
 screenshot("05-export-return.png")
+tap(node("export"))
+adb("shell", "input", "keyevent", "KEYCODE_BACK")
+time.sleep(1)
+assert node("record_count").get("text") == "1개"
+assert adb("shell", "run-as", PACKAGE, "cat", "files/readings.csv") == csv
 adb("shell", "am", "force-stop", PACKAGE)
 adb("shell", "am", "start", "-W", "-n", f"{PACKAGE}/.MainActivity")
 scroll_to_records()
 assert node("record_count").get("text") == "1개"
 assert node("save").get("enabled") == "false"
 screenshot("06-records-reopened.png")
+adb("shell", "am", "force-stop", PACKAGE)
+adb("shell", "wm", "size", "960x1920")
+adb("shell", "wm", "density", "480")
+adb("shell", "settings", "put", "system", "font_scale", "1.3")
+adb("shell", "am", "start", "-W", "-n", f"{PACKAGE}/.MainActivity")
+time.sleep(2)
+screenshot("07-small-screen.png")
+scroll_to_records()
+assert node("record_count").get("text") == "1개"
+assert node("save").get("text") == "현재 값 기록"
+assert node("export").get("text") == "CSV 내보내기"
+screenshot("08-large-text-records.png")
 runtime = adb("logcat", "-d", "-s", "AndroidRuntime:E")
 assert "FATAL EXCEPTION" not in runtime, runtime
 (OUTPUT / "run-result.txt").write_text(
@@ -93,7 +130,9 @@ assert "FATAL EXCEPTION" not in runtime, runtime
     "App launch: passed\n"
     "Measurement start/stop UI: passed\n"
     "Virtual phone sensor record: passed\n"
-    "CSV file picker and save return: passed\n"
+    "CSV file picker, saved file equality, and save return: passed\n"
+    "CSV picker cancellation preserves internal records: passed\n"
     "Record persistence after restart: passed\n"
+    "320dp wide screen with 130% font scale: passed\n"
     "Runtime fatal exception: none\n", encoding="utf-8")
 print((OUTPUT / "run-result.txt").read_text(encoding="utf-8"))
