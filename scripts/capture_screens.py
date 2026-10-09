@@ -88,11 +88,16 @@ csv = adb("shell", "run-as", PACKAGE, "cat", "files/readings.csv")
 assert len(csv.splitlines()) == 2, csv
 (OUTPUT / "emulator-record.txt").write_text(csv + "\n", encoding="utf-8")
 tap(node("export"))
-screenshot("04-system-export.png")
-buttons = [element for element in hierarchy().iter("node")
-           if element.get("text", "").upper() in ("SAVE", "저장")
-           and element.get("clickable") == "true"]
+buttons = []
+for _ in range(8):
+    buttons = [element for element in hierarchy().iter("node")
+               if element.get("text", "").upper() in ("SAVE", "저장")
+               and element.get("clickable") == "true"]
+    if buttons:
+        break
+    time.sleep(0.5)
 assert buttons, "System save button not found"
+screenshot("04-system-export.png")
 tap(buttons[-1])
 wait_node("record_count", text="1개")
 wait_node("export", enabled=True)
