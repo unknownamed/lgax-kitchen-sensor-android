@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">접시 건조 센서</string>
-    <string name="heading">접시 건조 센서 v0.1</string>
+    <string name="heading">접시 건조 센서</string>
     <string name="team">LG AX · 키친에서 치킨먹기</string>
     <string name="author">개발: 황대겸</string>
     <string name="endpoint_hint">ESP32 측정 주소 (http://192.168.4.1/readings)</string>
@@ -31,4 +31,25 @@
     <string name="no_records">저장된 기록이 없습니다.</string>
     <string name="export_saved">CSV 저장 완료</string>
     <string name="export_failed">CSV 저장 실패: %1$s</string>
+    <string name="subtitle">건조대 주변을 확인하고 기록하세요.</string>
+    <string name="version_badge">초기 개발 · v0.1.1</string>
+    <string name="connection_title">센서 연결</string>
+    <string name="connection_help">ESP32 Wi-Fi 연결 후 주소 입력 · 빈칸이면 휴대폰 센서만 사용</string>
+    <string name="short_endpoint_hint">http://192.168.4.1/readings</string>
+    <string name="drying_title">실험용 건조 지수</string>
+    <string name="drying_help">주변 온습도·빛으로 계산한 보정 전 점수</string>
+    <string name="score_unit">/ 100</string>
+    <string name="rack_title">건조대 주변</string>
+    <string name="temp_label">주변 온도 · °C</string>
+    <string name="humidity_label">주변 습도 · %</string>
+    <string name="ldr_label">빛 센서 · ADC / 4095</string>
+    <string name="phone_title">휴대폰 센서</string>
+    <string name="light_label">조도 · lx</string>
+    <string name="motion_label">움직임 · m/s²</string>
+    <string name="records_title">측정 기록</string>
+    <string name="record_count">%1$d개</string>
+    <string name="last_record">최근 기록 · %1$s</string>
+    <string name="records_none">아직 기록이 없어요.</string>
+    <string name="records_help">현재 측정값을 한 줄씩 저장합니다.</string>
+    <string name="reading_placeholder">—</string>
 </resources>

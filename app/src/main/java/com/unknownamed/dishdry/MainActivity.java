@@ -14,13 +14,16 @@ import android.os.SystemClock;
 import android.view.WindowInsets;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStreamReader;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -28,6 +31,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
@@ -54,6 +58,8 @@ public class MainActivity extends Activity implements SensorEventListener {
     private Float movement;
     private long motionAt;
     private String activeUrl;
+    private int recordCount;
+    private Instant lastRecord;
 
     private final Runnable poll = new Runnable() {
         @Override public void run() {
@@ -85,6 +91,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         lightSensor = sensors.getDefaultSensor(Sensor.TYPE_LIGHT);
         accelerometer = sensors.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         logFile = new File(getFilesDir(), "readings.csv");
+        loadRecordSummary();
         toggle.setOnClickListener(view -> { if (running) stop(); else start(); });
         findViewById(R.id.save).setOnClickListener(view -> saveReading());
         findViewById(R.id.export).setOnClickListener(view -> exportCsv());
@@ -192,16 +199,19 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     private void render() {
         SensorReading reading = currentExternal();
-        setValue(R.id.temperature, R.string.temperature, reading == null ? null : reading.temperature);
-        setValue(R.id.humidity, R.string.humidity, reading == null ? null : reading.humidity);
-        text(R.id.ldr, getString(R.string.ldr, reading == null ? getString(R.string.not_measured) : String.valueOf(reading.lightAdc)));
-        text(R.id.light, getString(R.string.light, lightSensor == null ? getString(R.string.sensor_absent) : number(lux)));
-        text(R.id.motion, getString(R.string.motion, accelerometer == null ? getString(R.string.sensor_absent) : number(currentMovement())));
-        text(R.id.drying, getString(R.string.drying, reading == null ? getString(R.string.not_measured) : reading.dryingIndex() + " / 100"));
-    }
-
-    private void setValue(int id, int format, Number value) {
-        text(id, getString(format, number(value)));
+        text(R.id.temperature, number(reading == null ? null : reading.temperature));
+        text(R.id.humidity, number(reading == null ? null : reading.humidity));
+        text(R.id.ldr, reading == null ? getString(R.string.not_measured) : String.valueOf(reading.lightAdc));
+        text(R.id.light, lightSensor == null ? getString(R.string.sensor_absent) : number(lux));
+        text(R.id.motion, accelerometer == null ? getString(R.string.sensor_absent) : number(currentMovement()));
+        text(R.id.drying, reading == null ? getString(R.string.reading_placeholder) : String.valueOf(reading.dryingIndex()));
+        ((ProgressBar) findViewById(R.id.drying_progress)).setProgress(reading == null ? 0 : reading.dryingIndex());
+        text(R.id.record_count, getString(R.string.record_count, recordCount));
+        text(R.id.last_record, lastRecord == null ? getString(R.string.records_none)
+                : getString(R.string.last_record, DateTimeFormatter.ofPattern("MM.dd HH:mm")
+                        .withZone(ZoneId.systemDefault()).format(lastRecord)));
+        findViewById(R.id.save).setEnabled(running && (reading != null || lux != null || currentMovement() != null));
+        findViewById(R.id.export).setEnabled(recordCount > 0);
     }
 
     private void text(int id, String value) {
@@ -238,7 +248,8 @@ public class MainActivity extends Activity implements SensorEventListener {
             toast(getString(R.string.record_empty));
             return;
         }
-        String row = Instant.now() + "," + csv(reading == null ? null : reading.temperature)
+        Instant recordedAt = Instant.now();
+        String row = recordedAt + "," + csv(reading == null ? null : reading.temperature)
                 + "," + csv(reading == null ? null : reading.humidity)
                 + "," + (reading == null ? "" : reading.lightAdc)
                 + "," + csv(lux) + "," + csv(motion)
@@ -248,8 +259,28 @@ public class MainActivity extends Activity implements SensorEventListener {
                 output.write("recorded_at_utc,temperature_c,humidity_percent,light_adc,phone_lux,phone_motion_m_s2,drying_index\n".getBytes(StandardCharsets.UTF_8));
             }
             output.write(row.getBytes(StandardCharsets.UTF_8));
+            recordCount++;
+            lastRecord = recordedAt;
+            render();
             toast(getString(R.string.record_saved));
         } catch (Exception error) {
+            toast(getString(R.string.record_failed, error.getMessage()));
+        }
+    }
+
+    private void loadRecordSummary() {
+        if (!logFile.exists()) return;
+        try (BufferedReader input = new BufferedReader(new InputStreamReader(
+                new FileInputStream(logFile), StandardCharsets.UTF_8))) {
+            input.readLine();
+            String line;
+            while ((line = input.readLine()) != null) {
+                if (line.isEmpty()) continue;
+                recordCount++;
+                try { lastRecord = Instant.parse(line.split(",", 2)[0]); }
+                catch (java.time.format.DateTimeParseException ignored) { }
+            }
+        } catch (java.io.IOException error) {
             toast(getString(R.string.record_failed, error.getMessage()));
         }
     }

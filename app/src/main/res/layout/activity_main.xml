@@ -1,96 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/root"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/heading"
-            android:textSize="25sp" />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/team" />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/author" />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:labelFor="@id/endpoint"
-            android:text="@string/endpoint_label" />
-        <EditText
-            android:id="@+id/endpoint"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="48dp"
-            android:hint="@string/endpoint_hint"
-            android:inputType="textUri"
-            android:importantForAutofill="no" />
-        <Button
-            android:id="@+id/toggle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/start" />
-        <TextView
-            android:id="@+id/status"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/idle" />
-        <TextView
-            android:id="@+id/temperature"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:textSize="20sp" />
-        <TextView
-            android:id="@+id/humidity"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="20sp" />
-        <TextView
-            android:id="@+id/ldr"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/light"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp" />
-        <TextView
-            android:id="@+id/motion"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/drying"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:textSize="22sp" />
-        <Button
-            android:id="@+id/save"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/save" />
-        <Button
-            android:id="@+id/export"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/export" />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/notice" />
+    android:id="@+id/root" android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/page" android:fillViewport="true">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:padding="20dp">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            style="@style/Label" android:text="@string/version_badge" android:background="@drawable/badge"
+            android:paddingHorizontal="8dp" android:paddingVertical="4dp" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="12dp" android:text="@string/heading" android:textSize="27sp"
+            android:textColor="@color/ink" android:textStyle="bold" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="5dp" android:text="@string/subtitle" android:textSize="13sp" android:textColor="@color/muted" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            style="@style/Label" android:layout_marginTop="9dp" android:text="@string/team" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            style="@style/Label" android:text="@string/author" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="20dp" android:orientation="vertical" android:padding="16dp" android:background="@drawable/card">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                style="@style/SectionTitle" android:text="@string/connection_title" />
+            <TextView android:id="@+id/status" android:layout_width="match_parent" android:layout_height="wrap_content"
+                style="@style/Label" android:layout_marginTop="8dp" android:text="@string/idle" />
+            <EditText android:id="@+id/endpoint" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="12dp" android:minHeight="48dp" android:paddingHorizontal="12dp" android:paddingVertical="10dp"
+                android:background="@drawable/input" android:textSize="13sp" android:textColor="@color/ink"
+                android:hint="@string/short_endpoint_hint" android:contentDescription="@string/endpoint_label"
+                android:inputType="textUri" android:importantForAutofill="no" />
+            <Button android:id="@+id/toggle" style="@style/PrimaryButton" android:layout_width="match_parent"
+                android:layout_height="48dp" android:layout_marginTop="10dp" android:text="@string/start" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                style="@style/Label" android:layout_marginTop="10dp" android:text="@string/connection_help" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="12dp" android:orientation="vertical" android:padding="16dp" android:background="@drawable/card">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                style="@style/SectionTitle" android:text="@string/drying_title" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:gravity="bottom" android:layout_marginTop="8dp">
+                <TextView android:id="@+id/drying" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="@string/reading_placeholder" android:textSize="40sp" android:textColor="@color/accent" android:fontFamily="sans-serif-medium" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp"
+                    android:layout_marginBottom="8dp" style="@style/Label" android:text="@string/score_unit" />
+            </LinearLayout>
+            <ProgressBar android:id="@+id/drying_progress" style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent" android:layout_height="8dp" android:max="100"
+                android:progress="0" android:progressTint="@color/accent" android:progressBackgroundTint="@color/line" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                style="@style/Label" android:layout_marginTop="10dp" android:text="@string/drying_help" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="12dp" android:orientation="vertical" android:padding="16dp" android:background="@drawable/card">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                style="@style/SectionTitle" android:text="@string/rack_title" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="14dp">
+                <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical">
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/Label" android:text="@string/temp_label" />
+                    <TextView android:id="@+id/temperature" android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/SensorValue" />
+                </LinearLayout>
+                <View android:layout_width="1dp" android:layout_height="56dp" android:background="@color/line" android:layout_marginHorizontal="16dp" />
+                <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical">
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/Label" android:text="@string/humidity_label" />
+                    <TextView android:id="@+id/humidity" android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/SensorValue" />
+                </LinearLayout>
+            </LinearLayout>
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/line" android:layout_marginVertical="14dp" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" style="@style/Label" android:text="@string/ldr_label" />
+                <TextView android:id="@+id/ldr" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="16sp" android:textColor="@color/ink" />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="12dp" android:orientation="vertical" android:padding="16dp" android:background="@drawable/card">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/SectionTitle" android:text="@string/phone_title" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="12dp">
+                <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical">
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/Label" android:text="@string/light_label" />
+                    <TextView android:id="@+id/light" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="22sp" android:textColor="@color/ink" />
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical">
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/Label" android:text="@string/motion_label" />
+                    <TextView android:id="@+id/motion" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="22sp" android:textColor="@color/ink" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="12dp" android:orientation="vertical" android:padding="16dp" android:background="@drawable/card">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" style="@style/SectionTitle" android:text="@string/records_title" />
+                <TextView android:id="@+id/record_count" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="18sp" android:textColor="@color/accent" />
+            </LinearLayout>
+            <TextView android:id="@+id/last_record" android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/Label" android:layout_marginTop="8dp" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/Label" android:layout_marginTop="4dp" android:text="@string/records_help" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="14dp">
+                <Button android:id="@+id/save" style="@style/PrimaryButton" android:layout_width="0dp" android:layout_weight="1" android:layout_height="48dp" android:text="@string/save" />
+                <Space android:layout_width="10dp" android:layout_height="1dp" />
+                <Button android:id="@+id/export" style="@style/SecondaryButton" android:layout_width="0dp" android:layout_weight="1" android:layout_height="48dp" android:text="@string/export" />
+            </LinearLayout>
+        </LinearLayout>
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/Label"
+            android:layout_marginTop="18dp" android:text="@string/notice" />
     </LinearLayout>
 </ScrollView>
