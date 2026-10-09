@@ -18,6 +18,7 @@ final class RecordStore {
     static final String HEADER = "recorded_at_utc,temperature_c,humidity_percent,light_adc,phone_lux,phone_motion_m_s2,drying_index";
     private final File file;
     private Summary summary = new Summary(0, null);
+    private long summarizedBytes = -1;
 
     static final class Summary {
         final int count;
@@ -31,6 +32,7 @@ final class RecordStore {
     RecordStore(File file) { this.file = file; }
 
     synchronized Summary loadSummary() throws IOException {
+        summarizedBytes = -1;
         int count = 0;
         Instant lastRecord = null;
         if (file.exists() && file.length() > 0) {
@@ -52,13 +54,14 @@ final class RecordStore {
             }
         }
         summary = new Summary(count, lastRecord);
+        summarizedBytes = file.length();
         return summary;
     }
 
     synchronized Summary append(ReadingSnapshot snapshot, Instant recordedAt) throws IOException {
         if (!snapshot.hasValues()) throw new IOException("측정 중인 유효한 값이 없습니다.");
-        // Re-read before appending so a failed load never silently extends an unrelated file.
-        loadSummary();
+        // Re-read only after a failed load or a changed file; ordinary saves append in constant time.
+        if (summarizedBytes < 0 || summarizedBytes != file.length()) loadSummary();
         boolean empty = !file.exists() || file.length() == 0;
         boolean needsNewline = false;
         if (!empty) {
@@ -73,6 +76,7 @@ final class RecordStore {
             output.write(snapshot.csvRow(recordedAt).getBytes(StandardCharsets.UTF_8));
         }
         summary = new Summary(summary.count + 1, recordedAt);
+        summarizedBytes = file.length();
         return summary;
     }
 

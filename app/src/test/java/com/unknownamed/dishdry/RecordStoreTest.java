@@ -74,4 +74,12 @@ public class RecordStoreTest {
         assertEquals(2, store.append(new ReadingSnapshot(null, null, 1f), TIME.plusSeconds(1)).count);
         assertEquals(3, Files.readAllLines(file.toPath()).size());
     }
+
+    @Test public void changedFileRefreshesCachedRecordCount() throws Exception {
+        File file = temporary.newFile();
+        RecordStore first = new RecordStore(file);
+        first.append(new ReadingSnapshot(null, null, 0.5f), TIME);
+        new RecordStore(file).append(new ReadingSnapshot(null, null, 1f), TIME.plusSeconds(1));
+        assertEquals(3, first.append(new ReadingSnapshot(null, null, 2f), TIME.plusSeconds(2)).count);
+    }
 }
