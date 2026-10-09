@@ -14,6 +14,8 @@ LG AX · 키친에서 치킨먹기 / 황대겸
 - [x] README 주제 흐름·구조도·구성 스케치
 - [x] 4컷 사용 시나리오와 화면 와이어프레임
 - [x] 앱 APK 빌드·Android lint·ESP32 컴파일 확인
+- [x] 실제 앱 에뮬레이터 실행 화면 캡처
+- [x] 에뮬레이터 가상 센서 기록·CSV 저장 화면·재시작 후 기록 유지 확인
 
 초기 앱과 펌웨어의 빌드 결과: [GitHub Actions](https://github.com/unknownamed/lgax-kitchen-sensor-android/actions/runs/37986890214). 위 체크는 코드 구현과 빌드 기준이다. 실제 센서 연결과 실사용 검증은 아래에 남겨 둔다.
 

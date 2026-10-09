@@ -1,0 +1,12 @@
+*.md text eol=lf
+*.txt text eol=lf
+*.xml text eol=lf
+*.java text eol=lf
+*.py text eol=lf
+*.yml text eol=lf
+*.svg text eol=lf
+*.gradle text eol=lf
+*.png binary
+*.jar binary
+gradlew text eol=lf
+*.bat text eol=crlf

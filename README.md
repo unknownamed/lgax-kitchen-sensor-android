@@ -10,6 +10,16 @@
 
 *접시 건조대 옆 센서와 앱을 연결하는 구성 스케치.*
 
+## 앱 실제 실행 화면
+
+v0.1.1 APK를 Android API 30 에뮬레이터에서 실행한 원본 캡처입니다. 연결·센서·지수·기록을 카드로 배치했습니다. ESP32는 연결하지 않았고, 기록 1개는 에뮬레이터의 가상 휴대폰 센서 값으로 저장한 것입니다.
+
+| 연결 대기 | 현재 값 기록 | 시스템 CSV 저장 |
+| --- | --- | --- |
+| <img src="docs/images/screenshots/01-overview.png" width="230" alt="실제 앱 연결 대기 화면"> | <img src="docs/images/screenshots/03-record-saved.png" width="230" alt="실제 앱에서 가상 휴대폰 센서 값 한 건을 기록한 화면"> | <img src="docs/images/screenshots/04-system-export.png" width="230" alt="Android 시스템 파일 선택기의 CSV 저장 화면"> |
+
+앱 실행, 측정 시작, 현재 값 기록, CSV 저장 화면과 앱 복귀, 재시작 후 기록 유지를 확인했습니다. [전체 실행 캡처](docs/images/screenshots), [실행 결과 원문](docs/logs/2026-10-10-android-emulator.txt), [실행 일지](docs/RUN_LOG.md).
+
 ## 주제의 흐름
 
 설거지 뒤 접시가 다 말랐는지 확인하려면 건조대에 가서 눈으로 보거나 만져 보게 됩니다. 여기서 출발해, 건조대 주변의 센서 수치를 휴대폰에서 볼 수 있게 만들어 보고 있습니다.
