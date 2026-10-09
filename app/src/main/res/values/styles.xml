@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.DishDry" parent="android:style/Theme.Material.Light.NoActionBar">
+    <style name="Theme.DishDry.Base" parent="android:style/Theme.Material.Light.NoActionBar">
         <item name="android:fontFamily">sans</item>
         <item name="android:colorAccent">@color/accent</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:statusBarColor">@color/page</item>
-        <item name="android:navigationBarColor">@color/page</item>
-        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:navigationBarColor">@color/ink</item>
         <item name="android:windowBackground">@color/page</item>
     </style>
+    <style name="Theme.DishDry" parent="Theme.DishDry.Base" />
     <style name="SectionTitle">
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">@color/ink</item>
@@ -25,7 +25,7 @@
     </style>
     <style name="PrimaryButton" parent="android:style/Widget.Material.Button">
         <item name="android:background">@drawable/button_primary</item>
-        <item name="android:textColor">@color/surface</item>
+        <item name="android:textColor">@color/primary_button_text</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:textSize">14sp</item>
         <item name="android:minHeight">48dp</item>
