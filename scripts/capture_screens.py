@@ -60,10 +60,14 @@ def scroll_to_views(required):
     for _ in range(30):
         visible = {element.get("resource-id").split("/")[-1]: element
                    for element in hierarchy().iter("node")}
+        viewport = list(map(int, re.findall(r"\d+", visible["root"].get("bounds"))))
+        safe_top, safe_bottom = viewport[1] + 24, viewport[3] - 24
         if all(name in visible for name in required):
             bounds = [list(map(int, re.findall(r"\d+", visible[name].get("bounds"))))
                       for name in required]
-            if all(box[1] >= 60 and box[3] <= height - 90 for box in bounds):
+            # UIAutomator clips bounds at the viewport; leave a margin so a
+            # partially visible button cannot count as a successful capture.
+            if all(box[1] >= safe_top and box[3] <= safe_bottom for box in bounds):
                 return
         # Small steps keep the target card visible at enlarged font sizes.
         adb("shell", "input", "swipe", str(width // 2), str(height * 3 // 4),
