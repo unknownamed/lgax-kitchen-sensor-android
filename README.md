@@ -79,12 +79,12 @@ flowchart TD
     end
 
     API -->|"같은 Wi-Fi · HTTP JSON"| HTTP
-    classDef device fill:#ffffff,stroke:#d2d2d7,color:#1d1d1f
-    classDef app fill:#ffffff,stroke:#0066cc,color:#1d1d1f
+    classDef device fill:#ffffff,stroke:#e2dcd6,color:#262626
+    classDef app fill:#ffffff,stroke:#a50034,color:#262626
     class DHT,LDR,ESP,API device
     class MAIN,CONTROL,HTTP,PARSE,STATE,SNAP,SCREEN,INDEX,PHONE,FILE,EXPORT app
-    style rack fill:#f5f5f7,stroke:#d2d2d7,color:#1d1d1f
-    style phone fill:#f5f5f7,stroke:#d2d2d7,color:#1d1d1f
+    style rack fill:#f6f3ef,stroke:#e2dcd6,color:#262626
+    style phone fill:#f6f3ef,stroke:#e2dcd6,color:#262626
 ```
 
 외부 센서의 온습도와 빛 ADC만 임시 건조 지수에 사용합니다. 휴대폰 센서는 별도로 수치와 기록에 표시합니다. 연결 실패나 오래된 외부 측정값은 미측정으로 처리하며, 모든 기록은 앱 내부에 저장합니다.
@@ -151,6 +151,8 @@ Windows에서는 `gradlew.bat assembleDebug`를 실행합니다. APK는 `app/bui
 ## ESP32 연결
 
 기준 보드는 일반 ESP32 DevKit입니다. ESP32-C3 등 다른 보드는 아래 핀 번호를 그대로 사용할 수 없습니다.
+
+[배선 그림과 확인 순서](docs/WIRING.md)에서 온습도 센서의 풀업과 빛 센서의 분압 연결을 각각 확인할 수 있습니다.
 
 | 부품 | 연결 |
 | --- | --- |
