@@ -25,3 +25,22 @@ OK (20 tests)
 
 
 ESP32 physical hardware: not connected. No physical readings were recorded.
+
+Corrected CI: https://github.com/unknownamed/lgax-kitchen-sensor-android/actions/runs/38024056685
+Corrected source commit: 0f5eb28732150c832133b45ba70ab7743aaf898b
+Command: ./gradlew testDebugUnitTest assembleDebug lintDebug --no-daemon
+Original successful CI excerpts:
+android	Build APK and check Android source	2026-10-10T04:26:54.3364453Z > Task :app:testDebugUnitTest
+android	Build APK and check Android source	2026-10-10T04:26:57.8333132Z > Task :app:assembleDebug
+android	Build APK and check Android source	2026-10-10T04:27:03.1334318Z > Task :app:lintDebug
+android	Build APK and check Android source	2026-10-10T04:27:03.1334826Z BUILD SUCCESSFUL in 43s
+esp32	Compile sensor firmware	2026-10-10T04:27:18.9516699Z Sketch uses 943328 bytes (71%) of program storage space. Maximum is 1310720 bytes.
+esp32	Compile sensor firmware	2026-10-10T04:27:18.9517554Z Global variables use 46132 bytes (14%) of dynamic memory, leaving 281548 bytes for local variables. Maximum is 327680 bytes.
+
+Original unit-test XML suite lines from android-check-reports:
+<testsuite name="com.unknownamed.dishdry.MeasurementStateTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-10T04:26:51" hostname="runnervmmprz5" time="0.004">
+<testsuite name="com.unknownamed.dishdry.RecordStoreTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-10-10T04:26:51" hostname="runnervmmprz5" time="0.018">
+<testsuite name="com.unknownamed.dishdry.SensorHttpClientTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-10-10T04:26:51" hostname="runnervmmprz5" time="2.517">
+<testsuite name="com.unknownamed.dishdry.SensorReadingTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-10-10T04:26:54" hostname="runnervmmprz5" time="0.001">
+Parsed unit-test totals: {'tests': 20, 'failures': 0, 'errors': 0, 'skipped': 0}
+Parsed lint severities: {'Warning': 13}
