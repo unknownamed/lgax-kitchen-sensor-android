@@ -66,6 +66,50 @@ public class RecordStoreTest {
         assertEquals("unrelated-file\n", new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8));
     }
 
+    @Test public void damagedMeasurementsDoNotChangeCountOrRecentRecordAndRemainExportable() throws Exception {
+        File file = temporary.newFile();
+        String[] damagedValues = {
+                ",,,,,", "25.000,,,,,", "25.000,50.000,1000,,,",
+                ",,,not-a-number,,", ",,,NaN,,", ",,,,Infinity,", ",,,1e309,,",
+                ",,,-1.000,,", ",,,,-0.500,",
+                "81.000,50.000,1000,,,57", "25.000,101.000,1000,,,57",
+                "25.000,50.000,4096,,,57", "25.000,50.000,1.500,,,57",
+                "25.000,50.000,1000,,,101", "NaN,50.000,1000,,,57"
+        };
+        StringBuilder csv = new StringBuilder(RecordStore.HEADER + "\n")
+                .append(new ReadingSnapshot(null, null, 0.5f).csvRow(TIME));
+        for (String values : damagedValues) {
+            csv.append(TIME.plusSeconds(1)).append(',').append(values).append('\n');
+        }
+        byte[] original = csv.toString().getBytes(StandardCharsets.UTF_8);
+        Files.write(file.toPath(), original);
+        RecordStore store = new RecordStore(file);
+        RecordStore.Summary summary = store.loadSummary();
+        assertEquals(1, summary.count);
+        assertEquals(TIME, summary.lastRecord);
+        ByteArrayOutputStream exported = new ByteArrayOutputStream();
+        store.copyTo(exported);
+        assertArrayEquals(original, exported.toByteArray());
+        assertArrayEquals(original, Files.readAllBytes(file.toPath()));
+    }
+
+    @Test public void completeExternalAndPhoneOnlyRowsSurviveReopenAtZeroAndRangeLimits() throws Exception {
+        File file = temporary.newFile();
+        RecordStore store = new RecordStore(file);
+        store.append(new ReadingSnapshot(null, 0f, null), TIME);
+        store.append(new ReadingSnapshot(null, null, 0f), TIME.plusSeconds(1));
+        store.append(new ReadingSnapshot(SensorReading.validated(-40, 100, 0, 0), null, null),
+                TIME.plusSeconds(2));
+        store.append(new ReadingSnapshot(SensorReading.validated(80, 0, 4095, 0), 320f, 0.12f),
+                TIME.plusSeconds(3));
+        RecordStore reopened = new RecordStore(file);
+        RecordStore.Summary summary = reopened.loadSummary();
+        assertEquals(4, summary.count);
+        assertEquals(TIME.plusSeconds(3), summary.lastRecord);
+        assertEquals(5, reopened.append(new ReadingSnapshot(null, 20f, null), TIME.plusSeconds(4)).count);
+        assertEquals(5, new RecordStore(file).loadSummary().count);
+    }
+
     @Test public void missingTrailingNewlineDoesNotMergeTwoRows() throws Exception {
         File file = temporary.newFile();
         String first = new ReadingSnapshot(null, null, 0.5f).csvRow(TIME).trim();

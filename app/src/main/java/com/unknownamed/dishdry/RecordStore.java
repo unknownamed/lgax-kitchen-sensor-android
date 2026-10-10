@@ -42,7 +42,7 @@ final class RecordStore {
                 String line;
                 while ((line = input.readLine()) != null) {
                     String[] columns = line.split(",", -1);
-                    if (columns.length != 7) continue;
+                    if (columns.length != 7 || !hasValidMeasurement(columns)) continue;
                     try {
                         Instant time = Instant.parse(columns[0]);
                         count++;
@@ -56,6 +56,32 @@ final class RecordStore {
         summary = new Summary(count, lastRecord);
         summarizedBytes = file.length();
         return summary;
+    }
+
+    private static boolean hasValidMeasurement(String[] columns) {
+        boolean hasExternal = !columns[1].isEmpty() || !columns[2].isEmpty()
+                || !columns[3].isEmpty() || !columns[6].isEmpty();
+        boolean hasLux = !columns[4].isEmpty();
+        boolean hasMovement = !columns[5].isEmpty();
+        try {
+            if (hasExternal) {
+                SensorReading.validated(Double.parseDouble(columns[1]),
+                        Double.parseDouble(columns[2]), Integer.parseInt(columns[3]), 0);
+                int index = Integer.parseInt(columns[6]);
+                if (index < 0 || index > 100) return false;
+            }
+            if (hasLux && !isNonnegativeFinite(columns[4])) return false;
+            if (hasMovement && !isNonnegativeFinite(columns[5])) return false;
+            return hasExternal || hasLux || hasMovement;
+        } catch (IllegalArgumentException ignored) {
+            // Ignore damaged rows in the summary without modifying the stored CSV.
+            return false;
+        }
+    }
+
+    private static boolean isNonnegativeFinite(String value) {
+        double number = Double.parseDouble(value);
+        return Double.isFinite(number) && number >= 0;
     }
 
     synchronized Summary append(ReadingSnapshot snapshot, Instant recordedAt) throws IOException {
