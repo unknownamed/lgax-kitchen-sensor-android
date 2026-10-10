@@ -1,12 +1,14 @@
 package com.unknownamed.dishdry;
 
-import com.sun.net.httpserver.HttpServer;
 import org.junit.Test;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import static org.junit.Assert.*;
 
 public class SensorHttpClientTest {
@@ -23,50 +25,28 @@ public class SensorHttpClientTest {
     }
 
     @Test public void httpErrorsDistinguishMissingAddressAndUnavailableSensor() throws Exception {
-        HttpServer server = server();
-        server.createContext("/missing", exchange -> { exchange.sendResponseHeaders(404, -1); exchange.close(); });
-        server.createContext("/sensor", exchange -> { exchange.sendResponseHeaders(503, -1); exchange.close(); });
-        server.createContext("/error", exchange -> { exchange.sendResponseHeaders(500, -1); exchange.close(); });
-        server.start();
-        try {
-            assertFailure(server, "/missing", SensorHttpClient.Failure.ADDRESS_NOT_FOUND, 404);
-            assertFailure(server, "/sensor", SensorHttpClient.Failure.SENSOR_UNAVAILABLE, 503);
-            assertFailure(server, "/error", SensorHttpClient.Failure.HTTP_RESPONSE, 500);
-        } finally { server.stop(0); }
+        try (ResponseServer server = new ResponseServer(404, 0, 0, "")) {
+            assertFailure(server, SensorHttpClient.Failure.ADDRESS_NOT_FOUND, 404);
+        }
+        try (ResponseServer server = new ResponseServer(503, 0, 0, "")) {
+            assertFailure(server, SensorHttpClient.Failure.SENSOR_UNAVAILABLE, 503);
+        }
+        try (ResponseServer server = new ResponseServer(500, 0, 0, "")) {
+            assertFailure(server, SensorHttpClient.Failure.HTTP_RESPONSE, 500);
+        }
     }
 
     @Test public void redirectIsReportedWithoutRequestingAnotherAddress() throws Exception {
-        HttpServer server = server();
-        AtomicInteger redirectedRequests = new AtomicInteger();
-        server.createContext("/redirect", exchange -> {
-            exchange.getResponseHeaders().set("Location", "/target");
-            exchange.sendResponseHeaders(302, -1);
-            exchange.close();
-        });
-        server.createContext("/target", exchange -> {
-            redirectedRequests.incrementAndGet();
-            exchange.sendResponseHeaders(503, -1);
-            exchange.close();
-        });
-        server.start();
-        try {
-            assertFailure(server, "/redirect", SensorHttpClient.Failure.HTTP_RESPONSE, 302);
-            assertEquals(0, redirectedRequests.get());
-        } finally { server.stop(0); }
+        try (ResponseServer server = new ResponseServer(302, 0, 0,
+                "Location: http://127.0.0.1:1/target\r\n")) {
+            assertFailure(server, SensorHttpClient.Failure.HTTP_RESPONSE, 302);
+        }
     }
 
     @Test public void oversizedResponseIsRejectedBeforeParsing() throws Exception {
-        HttpServer server = server();
-        server.createContext("/large", exchange -> {
-            byte[] body = new byte[SensorHttpClient.MAX_BODY_BYTES + 1];
-            exchange.sendResponseHeaders(200, body.length);
-            try (java.io.OutputStream output = exchange.getResponseBody()) { output.write(body); }
-            finally { exchange.close(); }
-        });
-        server.start();
-        try {
-            assertFailure(server, "/large", SensorHttpClient.Failure.RESPONSE_TOO_LARGE, 0);
-        } finally { server.stop(0); }
+        try (ResponseServer server = new ResponseServer(200, SensorHttpClient.MAX_BODY_BYTES + 1, 0, "")) {
+            assertFailure(server, SensorHttpClient.Failure.RESPONSE_TOO_LARGE, 0);
+        }
     }
 
     @Test public void closedPortIsReportedAsUnreachable() throws Exception {
@@ -81,28 +61,54 @@ public class SensorHttpClientTest {
     }
 
     @Test public void delayedResponseIsReportedAsTimeout() throws Exception {
-        HttpServer server = server();
-        server.createContext("/slow", exchange -> {
-            try { Thread.sleep(SensorHttpClient.TIMEOUT_MS + 500L); }
-            catch (InterruptedException error) { Thread.currentThread().interrupt(); }
-            finally { exchange.close(); }
-        });
-        server.start();
-        try {
-            assertFailure(server, "/slow", SensorHttpClient.Failure.TIMEOUT, 0);
-        } finally { server.stop(0); }
+        try (ResponseServer server = new ResponseServer(503, 0, SensorHttpClient.TIMEOUT_MS + 500L, "")) {
+            assertFailure(server, SensorHttpClient.Failure.TIMEOUT, 0);
+        }
     }
 
-    private static HttpServer server() throws IOException {
-        return HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
-    }
-
-    private static void assertFailure(HttpServer server, String path,
-                                      SensorHttpClient.Failure reason, int status) {
+    private static void assertFailure(ResponseServer server, SensorHttpClient.Failure reason, int status) {
         SensorHttpClient.RequestFailure failure = assertThrows(SensorHttpClient.RequestFailure.class,
                 () -> new SensorHttpClient().fetch("http://127.0.0.1:"
-                        + server.getAddress().getPort() + path));
+                        + server.listener.getLocalPort() + "/readings"));
         assertEquals(reason, failure.reason);
         assertEquals(status, failure.httpStatus);
+    }
+
+    /** One local HTTP reply; no Android or external sensor is involved. */
+    private static final class ResponseServer implements AutoCloseable {
+        final ServerSocket listener;
+        final Thread worker;
+
+        ResponseServer(int status, int bodySize, long delayMs, String headers) throws IOException {
+            listener = new ServerSocket(0, 1, InetAddress.getByName("127.0.0.1"));
+            worker = new Thread(() -> {
+                try (Socket connection = listener.accept()) {
+                    connection.setSoTimeout(1_000);
+                    BufferedReader input = new BufferedReader(new InputStreamReader(
+                            connection.getInputStream(), StandardCharsets.US_ASCII));
+                    String line;
+                    while ((line = input.readLine()) != null && !line.isEmpty()) { }
+                    if (delayMs > 0) Thread.sleep(delayMs);
+                    OutputStream output = connection.getOutputStream();
+                    output.write(("HTTP/1.1 " + status + " Test\r\nContent-Length: " + bodySize
+                            + "\r\nConnection: close\r\n" + headers + "\r\n")
+                            .getBytes(StandardCharsets.US_ASCII));
+                    output.write(new byte[bodySize]);
+                    output.flush();
+                } catch (IOException ignored) {
+                    // A timed-out client or close() can close the socket first.
+                } catch (InterruptedException error) {
+                    Thread.currentThread().interrupt();
+                }
+            });
+            worker.setDaemon(true);
+            worker.start();
+        }
+
+        @Override public void close() throws Exception {
+            listener.close();
+            worker.interrupt();
+            worker.join(1_000);
+        }
     }
 }

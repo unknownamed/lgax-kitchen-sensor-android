@@ -1,0 +1,27 @@
+Connection-error regression checks, v0.2.1
+Initial CI: https://github.com/unknownamed/lgax-kitchen-sensor-android/actions/runs/38009327881
+Initial source commit: 33975556643a387c56947575b8bb7c9833756a20
+Original CI timestamps are UTC.
+
+Initial CI failure (original excerpts):
+android	Build APK and check Android source	2026-10-10T00:31:06.1298466Z > Task :app:compileDebugUnitTestJavaWithJavac FAILED
+android	Build APK and check Android source	2026-10-10T00:31:06.1308469Z /home/runner/work/lgax-kitchen-sensor-android/lgax-kitchen-sensor-android/app/src/test/java/com/unknownamed/dishdry/SensorHttpClientTest.java:3: error: package com.sun.net.httpserver does not exist
+android	Build APK and check Android source	2026-10-10T00:31:06.1379933Z BUILD FAILED in 43s
+
+Correction: replace the JDK-only HTTP server with a standard ServerSocket HTTP reply.
+Local check recorded at: 2026-10-10T00:34:31.840648+00:00
+Environment: Windows, JDK 21, javac --release 17, JUnit 4.13.2.
+org.json 20240303 is only on the local check classpath; app dependencies are unchanged.
+Compiled five non-UI source classes and the four existing test classes.
+Command: java org.junit.runner.JUnitCore MeasurementStateTest RecordStoreTest SensorHttpClientTest SensorReadingTest
+(All test names use package com.unknownamed.dishdry; the local classpath is omitted.)
+
+Original local JUnit output:
+JUnit version 4.13.2
+....................
+Time: 2.6
+
+OK (20 tests)
+
+
+ESP32 physical hardware: not connected. No physical readings were recorded.
