@@ -35,7 +35,7 @@
     <string name="export_cancelled">CSV 저장을 취소했습니다. 내부 기록은 유지됩니다.</string>
     <string name="export_failed">CSV 저장 실패: %1$s</string>
     <string name="subtitle">건조대 주변을 확인하고 기록하세요.</string>
-    <string name="version_badge">v0.3.0</string>
+    <string name="version_badge">v0.3.1</string>
     <string name="product_label">DISHDRY</string>
     <string name="connection_title">센서 연결</string>
     <string name="connection_help">ESP32 Wi-Fi에 연결한 뒤 주소를 입력하세요. 비워 두면 휴대폰 센서만 사용합니다.</string>
