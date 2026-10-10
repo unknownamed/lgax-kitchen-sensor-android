@@ -62,6 +62,7 @@ final class DashboardView {
         int index = reading == null ? 0 : reading.dryingIndex();
         text(drying, reading == null ? string(R.string.reading_placeholder) : String.valueOf(index));
         text(dryingStatus, string(reading != null ? R.string.drying_ready
+                : controller.connection() == MeasurementController.Connection.PHONE_ONLY ? R.string.drying_phone_only
                 : controller.isRunning() ? R.string.drying_waiting : R.string.drying_idle));
         if (progress.getProgress() != index) progress.setProgress(index);
         text(recordCount, activity.getString(R.string.record_count, summary.count));

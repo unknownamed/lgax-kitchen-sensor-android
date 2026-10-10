@@ -4,8 +4,6 @@
     <string name="heading">접시 건조 센서</string>
     <string name="team">LG AX · 키친에서 치킨먹기</string>
     <string name="author">개발: 황대겸</string>
-    <string name="endpoint_hint">ESP32 측정 주소 (http://192.168.4.1/readings)</string>
-    <string name="endpoint_label">ESP32 주소 — 빈칸이면 휴대폰 센서만 측정</string>
     <string name="start">측정 시작</string>
     <string name="stop">측정 중지</string>
     <string name="save">현재 값 기록</string>
@@ -26,12 +24,6 @@
     <string name="failure_response_size">측정 응답이 너무 큽니다. 측정 주소를 확인하세요.</string>
     <string name="failure_communication">통신이 끊겼습니다. 센서 Wi-Fi 연결을 확인하세요.</string>
     <string name="invalid_url">http 또는 https 측정 주소를 입력하세요.</string>
-    <string name="temperature">주변 온도: %1$s °C</string>
-    <string name="humidity">주변 습도: %1$s %%</string>
-    <string name="ldr">건조대 빛 센서: %1$s / 4095 (ADC)</string>
-    <string name="light">휴대폰 조도: %1$s lx</string>
-    <string name="motion">휴대폰 움직임: %1$s m/s²</string>
-    <string name="drying">실험용 건조 지수: %1$s</string>
     <string name="not_measured">미측정</string>
     <string name="sensor_absent">센서 없음</string>
     <string name="notice">주변 환경 수치로만 계산하는 임시 지수입니다. 접시 표면의 물기를 측정하지 않습니다. 앱이 화면에서 벗어나면 측정이 중지됩니다.</string>
@@ -47,9 +39,8 @@
     <string name="product_label">DISHDRY</string>
     <string name="connection_title">센서 연결</string>
     <string name="connection_help">ESP32 Wi-Fi에 연결한 뒤 주소를 입력하세요. 비워 두면 휴대폰 센서만 사용합니다.</string>
-    <string name="short_endpoint_hint">http://192.168.4.1/readings</string>
+    <string name="endpoint_example">예: http://192.168.4.1/readings</string>
     <string name="drying_title">실험용 건조 지수</string>
-    <string name="drying_help">주변 온습도·빛으로 계산한 보정 전 점수</string>
     <string name="score_unit">/ 100</string>
     <string name="rack_title">건조대 주변</string>
     <string name="temp_label">주변 온도 · °C</string>
@@ -73,5 +64,7 @@
     <string name="badge_retrying">재연결 중</string>
     <string name="drying_idle">측정을 시작하면 지수를 확인할 수 있어요.</string>
     <string name="drying_waiting">외부 센서 측정값을 기다리고 있어요.</string>
+    <string name="drying_phone_only">지수는 ESP32 연결 후 표시돼요.</string>
     <string name="drying_ready">온습도·빛으로 계산한 실험용 지수예요.</string>
+    <string name="product_description">주방 환경 센서</string>
 </resources>

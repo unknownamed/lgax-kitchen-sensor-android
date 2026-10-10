@@ -57,7 +57,7 @@ def screenshot(name):
 def scroll_to_views(required):
     size = adb("shell", "wm", "size")
     width, height = map(int, re.findall(r"(\d+)x(\d+)", size)[-1])
-    for _ in range(10):
+    for _ in range(30):
         visible = {element.get("resource-id").split("/")[-1]: element
                    for element in hierarchy().iter("node")}
         if all(name in visible for name in required):
@@ -65,9 +65,12 @@ def scroll_to_views(required):
                       for name in required]
             if all(box[1] >= 60 and box[3] <= height - 90 for box in bounds):
                 return
+        # Small steps keep the target card visible at enlarged font sizes.
         adb("shell", "input", "swipe", str(width // 2), str(height * 3 // 4),
             str(width // 2), str(height * 7 // 12), "500")
         time.sleep(0.5)
+
+    raise AssertionError(f"Could not scroll all target views into the screen: {required}")
 
 
 def scroll_to_records():
@@ -85,7 +88,7 @@ tap(node("toggle"))
 screenshot("02-measuring.png")
 assert node("toggle").get("text") == "측정 중지"
 assert node("connection_badge").get("text") == "휴대폰 측정"
-assert node("drying_status").get("text") == "외부 센서 측정값을 기다리고 있어요."
+assert node("drying_status").get("text") == "지수는 ESP32 연결 후 표시돼요."
 scroll_to_views(("temperature", "humidity", "ldr", "light", "motion"))
 screenshot("09-sensors.png")
 scroll_to_records()
