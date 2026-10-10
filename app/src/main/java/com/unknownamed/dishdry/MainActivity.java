@@ -2,17 +2,23 @@ package com.unknownamed.dishdry;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.ContentValues;
 import android.content.pm.ApplicationInfo;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.WindowInsets;
 import android.view.View;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -51,11 +57,47 @@ public class MainActivity extends Activity {
         files.execute(() -> {
             try {
                 RecordStore.Summary loaded = records.loadSummary();
+                if (examplePreview) prepareExampleDownloads();
                 finishFileWork(() -> summary = loaded);
             } catch (Exception error) {
                 finishFileWork(() -> toast(getString(R.string.record_failed, error.getMessage())));
             }
         });
+    }
+
+    private void prepareExampleDownloads() throws IOException {
+        if (android.os.Build.VERSION.SDK_INT < 29) return;
+        Uri collection = MediaStore.Downloads.EXTERNAL_CONTENT_URI;
+        for (int index = 1; index <= 3; index++) {
+            String name = "dish-dry-example-0" + index + ".csv";
+            try (Cursor existing = getContentResolver().query(collection,
+                    new String[] {MediaStore.MediaColumns._ID},
+                    MediaStore.MediaColumns.DISPLAY_NAME + " = ?", new String[] {name}, null)) {
+                if (existing != null && existing.moveToFirst()) continue;
+            }
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.MediaColumns.DISPLAY_NAME, name);
+            values.put(MediaStore.MediaColumns.MIME_TYPE, "text/csv");
+            values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
+            values.put(MediaStore.MediaColumns.IS_PENDING, 1);
+            Uri created = getContentResolver().insert(collection, values);
+            if (created == null) throw new IOException("샘플 파일을 만들 수 없습니다.");
+            try {
+                ReadingSnapshot sample = new ReadingSnapshot(
+                        SensorReading.validated(25, 50, 1000, 0), 320f, 0.12f);
+                String csv = RecordStore.HEADER + "\n" + sample.csvRow(Instant.now());
+                try (OutputStream output = getContentResolver().openOutputStream(created, "w")) {
+                    if (output == null) throw new IOException("샘플 파일을 열 수 없습니다.");
+                    output.write(csv.getBytes(StandardCharsets.UTF_8));
+                }
+                values.clear();
+                values.put(MediaStore.MediaColumns.IS_PENDING, 0);
+                getContentResolver().update(created, values, null, null);
+            } catch (IOException | RuntimeException error) {
+                getContentResolver().delete(created, null, null);
+                throw error;
+            }
+        }
     }
 
     private void applySystemInsets() {

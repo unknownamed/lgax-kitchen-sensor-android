@@ -107,26 +107,15 @@ def start_example():
     wait_node("toggle", text="측정 중지")
 
 
-def seed_download_examples(csv):
+def verify_download_examples(csv):
     rows = csv.splitlines()
     assert len(rows) == 4
     for index, row in enumerate(rows[1:], 1):
         name = f"dish-dry-example-0{index}.csv"
-        body = (rows[0]+"\n"+row+"\n").encode("utf-8")
-        collection = "content://media/external_primary/downloads"
-        adb("shell", "content", "insert",
-                     "--uri", "content://media/external_primary/downloads",
-                     "--bind", f"_display_name:s:{name}",
-                     "--bind", "mime_type:s:text/csv",
-                     "--bind", "relative_path:s:Download/")
-        listing = adb("shell", "content", "query", "--uri", collection,
-                      "--projection", "_id:_display_name")
-        entries = [line for line in listing.splitlines() if f"_display_name={name}" in line]
-        assert len(entries) == 1, listing
-        row_id = re.search(r"_id=(\d+)", entries[0]).group(1)
-        subprocess.run(["adb", "shell", "content", "write", "--uri", collection+"/"+row_id],
-                       input=body, check=True)
-        assert adb("shell", "cat", f"/sdcard/Download/{name}") == body.decode().strip()
+        body = adb("shell", "cat", f"/sdcard/Download/{name}")
+        sample_rows = body.splitlines()
+        assert len(sample_rows) == 2 and sample_rows[0] == rows[0], body
+        assert sample_rows[1].split(",")[1:] == row.split(",")[1:], body
 
 
 assert adb("shell", "getprop", "ro.kernel.qemu") == "1", "Use a fresh emulator only"
@@ -165,7 +154,7 @@ screenshot("03-record-saved.png")
 csv = adb("shell", "run-as", PACKAGE, "cat", f"files/{EXAMPLE_FILE}")
 assert len(csv.splitlines()) == 4
 (OUTPUT / "emulator-record.txt").write_text(csv+"\n", encoding="utf-8")
-seed_download_examples(csv)
+verify_download_examples(csv)
 
 tap(node("export"))
 buttons = []
