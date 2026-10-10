@@ -113,14 +113,18 @@ def seed_download_examples(csv):
     for index, row in enumerate(rows[1:], 1):
         name = f"dish-dry-example-0{index}.csv"
         body = (rows[0]+"\n"+row+"\n").encode("utf-8")
-        result = adb("shell", "content", "insert",
+        collection = "content://media/external_primary/downloads"
+        adb("shell", "content", "insert",
                      "--uri", "content://media/external_primary/downloads",
                      "--bind", f"_display_name:s:{name}",
                      "--bind", "mime_type:s:text/csv",
                      "--bind", "relative_path:s:Download/")
-        uris = re.findall(r"content://media/[^\s]+", result)
-        assert uris, result
-        subprocess.run(["adb", "shell", "content", "write", "--uri", uris[-1]],
+        listing = adb("shell", "content", "query", "--uri", collection,
+                      "--projection", "_id:_display_name")
+        entries = [line for line in listing.splitlines() if f"_display_name={name}" in line]
+        assert len(entries) == 1, listing
+        row_id = re.search(r"_id=(\d+)", entries[0]).group(1)
+        subprocess.run(["adb", "shell", "content", "write", "--uri", collection+"/"+row_id],
                        input=body, check=True)
         assert adb("shell", "cat", f"/sdcard/Download/{name}") == body.decode().strip()
 

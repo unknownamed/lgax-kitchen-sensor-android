@@ -41,7 +41,8 @@ public class MainActivity extends Activity {
         findViewById(R.id.example_record_notice).setVisibility(examplePreview ? View.VISIBLE : View.GONE);
         measurements = new MeasurementController(this, this::render, examplePreview);
         records = new RecordStore(new File(getFilesDir(), examplePreview ? "example-readings.csv" : "readings.csv"));
-        screen.endpoint.setText(getPreferences(MODE_PRIVATE).getString("endpoint", ""));
+        screen.endpoint.setText(examplePreview ? "http://192.168.4.1/readings"
+                : getPreferences(MODE_PRIVATE).getString("endpoint", ""));
         screen.toggle.setOnClickListener(view -> toggleMeasurement());
         screen.save.setOnClickListener(view -> saveReading());
         screen.export.setOnClickListener(view -> exportCsv());
