@@ -54,31 +54,40 @@ def screenshot(name):
         subprocess.run(["adb", "exec-out", "screencap", "-p"], stdout=output, check=True)
 
 
-def scroll_to_records():
+def scroll_to_views(required):
     size = adb("shell", "wm", "size")
     width, height = map(int, re.findall(r"(\d+)x(\d+)", size)[-1])
     for _ in range(10):
         visible = {element.get("resource-id").split("/")[-1]: element
                    for element in hierarchy().iter("node")}
-        required = ("record_count", "save", "export")
         if all(name in visible for name in required):
             bounds = [list(map(int, re.findall(r"\d+", visible[name].get("bounds"))))
                       for name in required]
             if all(box[1] >= 60 and box[3] <= height - 90 for box in bounds):
                 return
         adb("shell", "input", "swipe", str(width // 2), str(height * 3 // 4),
-            str(width // 2), str(height // 4), "350")
+            str(width // 2), str(height * 7 // 12), "500")
         time.sleep(0.5)
+
+
+def scroll_to_records():
+    scroll_to_views(("record_count", "save", "export"))
 
 
 adb("install", "-r", "app/build/outputs/apk/debug/app-debug.apk")
 adb("shell", "am", "start", "-W", "-n", f"{PACKAGE}/.MainActivity")
 time.sleep(2)
 assert node("toggle").get("text") == "측정 시작"
+assert node("connection_badge").get("text") == "대기"
+assert node("drying_status").get("text") == "측정을 시작하면 지수를 확인할 수 있어요."
 screenshot("01-overview.png")
 tap(node("toggle"))
 screenshot("02-measuring.png")
 assert node("toggle").get("text") == "측정 중지"
+assert node("connection_badge").get("text") == "휴대폰 측정"
+assert node("drying_status").get("text") == "외부 센서 측정값을 기다리고 있어요."
+scroll_to_views(("temperature", "humidity", "ldr", "light", "motion"))
+screenshot("09-sensors.png")
 scroll_to_records()
 assert node("record_count").get("text") == "0개"
 tap(node("save"))
@@ -133,6 +142,7 @@ assert "FATAL EXCEPTION" not in runtime, runtime
     "Android API 30 emulator\n"
     "ESP32 hardware: not connected\n"
     "App launch: passed\n"
+    "Idle and phone-only status badges: passed\n"
     "Measurement start/stop UI: passed\n"
     "Virtual phone sensor record: passed\n"
     "CSV file picker, saved file equality, and save return: passed\n"

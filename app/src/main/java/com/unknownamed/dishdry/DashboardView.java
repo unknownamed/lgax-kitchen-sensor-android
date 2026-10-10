@@ -25,6 +25,8 @@ final class DashboardView {
     private final TextView light;
     private final TextView motion;
     private final TextView drying;
+    private final TextView dryingStatus;
+    private final TextView connectionBadge;
     private final TextView recordCount;
     private final TextView lastRecord;
     private final ProgressBar progress;
@@ -42,6 +44,8 @@ final class DashboardView {
         light = activity.findViewById(R.id.light);
         motion = activity.findViewById(R.id.motion);
         drying = activity.findViewById(R.id.drying);
+        dryingStatus = activity.findViewById(R.id.drying_status);
+        connectionBadge = activity.findViewById(R.id.connection_badge);
         recordCount = activity.findViewById(R.id.record_count);
         lastRecord = activity.findViewById(R.id.last_record);
         progress = activity.findViewById(R.id.drying_progress);
@@ -57,16 +61,30 @@ final class DashboardView {
         text(motion, controller.hasMotionSensor() ? number(snapshot.movement) : string(R.string.sensor_absent));
         int index = reading == null ? 0 : reading.dryingIndex();
         text(drying, reading == null ? string(R.string.reading_placeholder) : String.valueOf(index));
+        text(dryingStatus, string(reading != null ? R.string.drying_ready
+                : controller.isRunning() ? R.string.drying_waiting : R.string.drying_idle));
         if (progress.getProgress() != index) progress.setProgress(index);
         text(recordCount, activity.getString(R.string.record_count, summary.count));
         text(lastRecord, summary.lastRecord == null ? string(R.string.records_none)
                 : activity.getString(R.string.last_record,
                         RECORD_TIME.withZone(ZoneId.systemDefault()).format(summary.lastRecord)));
         text(status, connectionText(controller));
+        text(connectionBadge, string(connectionBadgeText(controller)));
         text(toggle, string(controller.isRunning() ? R.string.stop : R.string.start));
         endpoint.setEnabled(!controller.isRunning());
         save.setEnabled(!busy && controller.isRunning() && snapshot.hasValues());
         export.setEnabled(!busy && summary.count > 0);
+    }
+
+    private int connectionBadgeText(MeasurementController controller) {
+        switch (controller.connection()) {
+            case PHONE_ONLY: return R.string.badge_phone;
+            case CONNECTING: return R.string.badge_connecting;
+            case CONNECTED: return R.string.badge_connected;
+            case FAILED: return R.string.badge_retry;
+            case RETRYING: return R.string.badge_retrying;
+            default: return R.string.badge_idle;
+        }
     }
 
     private String connectionText(MeasurementController controller) {

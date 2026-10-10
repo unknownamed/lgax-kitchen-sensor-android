@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="page">#F5F5F7</color>
+    <color name="page">#F6F3EF</color>
     <color name="surface">#FFFFFF</color>
-    <color name="ink">#1D1D1F</color>
-    <color name="muted">#6E6E73</color>
-    <color name="accent">#0066CC</color>
-    <color name="accent_pressed">#004F9F</color>
-    <color name="focus">#0071E3</color>
-    <color name="line">#D2D2D7</color>
-    <color name="soft">#FAFAFC</color>
-    <color name="disabled">#E8E8ED</color>
+    <color name="ink">#262626</color>
+    <color name="muted">#716F6A</color>
+    <color name="accent">#A50034</color>
+    <color name="accent_pressed">#7E0028</color>
+    <color name="active_red">#FD312E</color>
+    <color name="focus">#A50034</color>
+    <color name="line">#E2DCD6</color>
+    <color name="soft">#FAF8F5</color>
+    <color name="disabled">#EAE5DF</color>
+    <color name="disabled_ink">#625F5A</color>
+    <color name="accent_soft">#FBECEF</color>
+    <color name="hero_surface">#FFF8F9</color>
 </resources>

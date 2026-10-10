@@ -4,53 +4,71 @@
     android:background="@color/page" android:fillViewport="true">
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
         android:orientation="vertical" android:paddingHorizontal="20dp"
-        android:paddingTop="28dp" android:paddingBottom="28dp">
+        android:paddingTop="24dp" android:paddingBottom="28dp">
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
             android:orientation="horizontal" android:gravity="center_vertical">
-            <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
-                android:text="@string/product_label" android:textSize="12sp" android:letterSpacing="0.16"
-                android:textColor="@color/ink" android:fontFamily="sans-serif-medium" />
+            <ImageView android:layout_width="44dp" android:layout_height="44dp"
+                android:src="@drawable/ic_launcher_foreground" android:background="@drawable/icon_background"
+                android:importantForAccessibility="no" />
+            <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+                android:orientation="vertical" android:layout_marginStart="12dp">
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="@string/product_label" android:textSize="12sp" android:letterSpacing="0.12"
+                    android:textColor="@color/accent" android:fontFamily="sans-serif-medium" />
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    style="@style/Label" android:layout_marginTop="3dp" android:text="@string/team" />
+            </LinearLayout>
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                style="@style/Label" android:text="@string/version_badge" />
+                style="@style/Label" android:text="@string/version_badge" android:layout_marginStart="8dp" />
         </LinearLayout>
         <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_marginTop="14dp" android:text="@string/heading" android:textSize="32sp"
-            android:letterSpacing="-0.025" android:fontFamily="sans-serif-medium"
+            android:layout_marginTop="20dp" android:text="@string/heading" android:textSize="28sp"
+            android:letterSpacing="-0.02" android:fontFamily="sans-serif-medium"
             android:includeFontPadding="false" android:textColor="@color/ink" />
         <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
             android:layout_marginTop="8dp" android:text="@string/subtitle" android:textSize="14sp"
             android:lineSpacingMultiplier="1.3" android:textColor="@color/muted" />
 
-        <LinearLayout style="@style/Card" android:layout_marginTop="24dp" android:gravity="center_horizontal">
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                style="@style/Label" android:gravity="center" android:text="@string/drying_title" />
+        <LinearLayout style="@style/Card" android:layout_marginTop="20dp" android:background="@drawable/card_highlight" android:gravity="center_horizontal">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                style="@style/StatusBadge" android:text="@string/drying_title" />
             <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:orientation="horizontal" android:gravity="bottom" android:layout_marginTop="12dp">
+                android:orientation="horizontal" android:gravity="bottom" android:layout_marginTop="8dp">
                 <TextView android:id="@+id/drying" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="@string/reading_placeholder" android:textSize="64sp" android:textColor="@color/ink"
+                    android:text="@string/reading_placeholder" android:textSize="64sp" android:textColor="@color/accent"
                     android:includeFontPadding="false" android:fontFamily="sans-serif-medium" android:fontFeatureSettings="tnum" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                     android:layout_marginStart="8dp" android:layout_marginBottom="8dp"
                     android:textSize="15sp" android:textColor="@color/muted" android:text="@string/score_unit" />
             </LinearLayout>
             <ProgressBar android:id="@+id/drying_progress" style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent" android:layout_height="4dp" android:layout_marginTop="14dp"
+                android:layout_width="match_parent" android:layout_height="5dp" android:layout_marginTop="10dp"
                 android:max="100" android:progress="0" android:progressDrawable="@drawable/measurement_progress" />
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                style="@style/Label" android:gravity="center" android:layout_marginTop="12dp" android:text="@string/drying_help" />
+            <TextView android:id="@+id/drying_status" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:gravity="center" android:layout_marginTop="8dp" android:text="@string/drying_idle"
+                android:textSize="14sp" android:textColor="@color/ink" android:lineSpacingMultiplier="1.3" />
         </LinearLayout>
 
         <LinearLayout style="@style/Card">
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                style="@style/SectionTitle" android:text="@string/connection_title" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:gravity="center_vertical">
+                <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+                    style="@style/SectionTitle" android:text="@string/connection_title" />
+                <TextView android:id="@+id/connection_badge" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    style="@style/StatusBadge" android:layout_marginStart="8dp" android:text="@string/badge_idle"
+                    android:accessibilityLiveRegion="polite" />
+            </LinearLayout>
             <TextView android:id="@+id/status" android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:textSize="14sp" android:textColor="@color/muted" android:lineSpacingMultiplier="1.3"
-                android:layout_marginTop="8dp" android:text="@string/idle" />
+                android:layout_marginTop="10dp" android:text="@string/idle" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                style="@style/Label" android:layout_marginTop="16dp" android:text="@string/endpoint_field_label"
+                android:labelFor="@id/endpoint" />
             <EditText android:id="@+id/endpoint" android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:layout_marginTop="16dp" android:minHeight="50dp" android:paddingHorizontal="16dp"
-                android:paddingVertical="12dp" android:background="@drawable/input" android:textSize="15sp"
+                android:layout_marginTop="6dp" android:minHeight="50dp" android:paddingHorizontal="14dp"
+                android:paddingVertical="12dp" android:background="@drawable/input" android:textSize="14sp"
                 android:textColor="@color/ink" android:textColorHint="@color/muted" android:hint="@string/short_endpoint_hint"
-                android:contentDescription="@string/endpoint_label" android:inputType="textUri"
+                android:inputType="textUri"
                 android:singleLine="true" android:importantForAutofill="no" />
             <Button android:id="@+id/toggle" style="@style/PrimaryButton" android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="@string/start" />
@@ -62,36 +80,38 @@
             <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
                 style="@style/SectionTitle" android:text="@string/rack_title" />
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:orientation="horizontal" android:layout_marginTop="20dp">
-                <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical">
+                android:orientation="horizontal" android:layout_marginTop="16dp">
+                <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" style="@style/SensorTile">
                     <TextView android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/Label" android:text="@string/temp_label" />
                     <TextView android:id="@+id/temperature" android:layout_width="match_parent" android:layout_height="wrap_content"
                         style="@style/SensorValue" android:layout_marginTop="8dp" />
                 </LinearLayout>
-                <Space android:layout_width="16dp" android:layout_height="1dp" />
-                <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical">
+                <Space android:layout_width="12dp" android:layout_height="1dp" />
+                <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" style="@style/SensorTile">
                     <TextView android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/Label" android:text="@string/humidity_label" />
                     <TextView android:id="@+id/humidity" android:layout_width="match_parent" android:layout_height="wrap_content"
                         style="@style/SensorValue" android:layout_marginTop="8dp" />
                 </LinearLayout>
             </LinearLayout>
-            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/line" android:layout_marginVertical="20dp" />
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/Label" android:text="@string/ldr_label" />
-            <TextView android:id="@+id/ldr" android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:textSize="22sp" android:textColor="@color/ink" android:layout_marginTop="8dp" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="12dp" style="@style/SensorTile">
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/Label" android:text="@string/ldr_label" />
+                <TextView android:id="@+id/ldr" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:textSize="22sp" android:textColor="@color/ink" android:layout_marginTop="8dp" />
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout style="@style/Card">
             <TextView android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/SectionTitle" android:text="@string/phone_title" />
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:orientation="horizontal" android:layout_marginTop="20dp">
-                <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical">
+                android:orientation="horizontal" android:layout_marginTop="16dp">
+                <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" style="@style/SensorTile">
                     <TextView android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/Label" android:text="@string/light_label" />
                     <TextView android:id="@+id/light" android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:textSize="24sp" android:textColor="@color/ink" android:layout_marginTop="8dp" />
                 </LinearLayout>
-                <Space android:layout_width="16dp" android:layout_height="1dp" />
-                <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical">
+                <Space android:layout_width="12dp" android:layout_height="1dp" />
+                <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" style="@style/SensorTile">
                     <TextView android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/Label" android:text="@string/motion_label" />
                     <TextView android:id="@+id/motion" android:layout_width="match_parent" android:layout_height="wrap_content"
                         android:textSize="24sp" android:textColor="@color/ink" android:layout_marginTop="8dp" />
@@ -103,7 +123,7 @@
             <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
                 style="@style/SectionTitle" android:text="@string/records_title" />
             <TextView android:id="@+id/record_count" android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:textSize="36sp" android:textColor="@color/ink" android:fontFamily="sans-serif-medium" android:layout_marginTop="12dp" />
+                android:textSize="36sp" android:textColor="@color/accent" android:fontFamily="sans-serif-medium" android:layout_marginTop="12dp" />
             <TextView android:id="@+id/last_record" android:layout_width="match_parent" android:layout_height="wrap_content"
                 style="@style/Label" android:layout_marginTop="4dp" />
             <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -118,8 +138,6 @@
             android:layout_marginTop="24dp" android:text="@string/notice" />
         <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/line" android:layout_marginTop="24dp" />
         <TextView android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/Label"
-            android:layout_marginTop="16dp" android:text="@string/team" />
-        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/Label"
-            android:layout_marginTop="4dp" android:text="@string/author" />
+            android:layout_marginTop="16dp" android:text="@string/author" />
     </LinearLayout>
 </ScrollView>
