@@ -2,8 +2,14 @@
 #include <WebServer.h>
 #include <DHT.h>
 
-const uint8_t DHT_PIN = 4;
-const uint8_t LIGHT_PIN = 34;
+#if !defined(CONFIG_IDF_TARGET_ESP32C6)
+#error "Select ESP32C6 Dev Module (esp32:esp32:esp32c6) for this wiring."
+#endif
+
+// DevKitC-1 header layout. Avoid boot strapping and USB pins.
+// Installation power: 3 x AA -> regulated 5 V boost -> 5V/GND headers.
+const uint8_t DHT_PIN = 18;
+const uint8_t LIGHT_PIN = 0;
 const unsigned long SAMPLE_INTERVAL_MS = 3000;
 DHT dht(DHT_PIN, DHT22);
 WebServer server(80);
@@ -32,7 +38,7 @@ void sendReading() {
     server.send(503, "application/json", "{\"error\":\"sensor_unavailable\"}");
     return;
   }
-  String body = "{\"device\":\"dishdry-esp32\",\"temperature_c\":";
+  String body = "{\"device\":\"dishdry-esp32\",\"board\":\"esp32-c6-devkitc-1\",\"temperature_c\":";
   body += String(temperatureC, 1);
   body += ",\"humidity_percent\":" + String(humidityPercent, 1);
   body += ",\"light_adc\":" + String(lightAdc);
@@ -42,6 +48,7 @@ void sendReading() {
 
 void setup() {
   Serial.begin(115200);
+  Serial.println("Board target: ESP32-C6 / DevKitC-1 header layout");
   dht.begin();
   analogReadResolution(12);
   WiFi.mode(WIFI_AP);
