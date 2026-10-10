@@ -1,0 +1,24 @@
+Run: https://github.com/unknownamed/lgax-kitchen-sensor-android/actions/runs/38052774131
+Commit: 58497f5ce402e326576ef53c116950fbbdf7c49f
+Date (Korea): 2026-10-10
+
+Local RecordStoreTest on corrected source: OK (9 tests).
+Regression fixture: one valid row and 15 damaged rows, not physical sensor readings.
+Previous RecordStore source (8c44644): one expected failure, expected count 1 but was 16.
+Corrected source: count 1, recent timestamp unchanged, internal and exported CSV bytes preserved.
+
+Gradle testDebugUnitTest assembleDebug lintDebug: success
+Unit tests: {'tests': 22, 'failures': 0, 'errors': 0, 'skipped': 0}
+MeasurementStateTest: 4 tests
+RecordStoreTest: 9 tests
+SensorHttpClientTest: 7 tests
+SensorReadingTest: 2 tests
+Lint: errors 0, warnings 7
+Warning IDs: OldTargetApi, DataExtractionRules, UseCompoundDrawables (4), Overdraw
+
+ESP32-C6 firmware compile (esp32:esp32:esp32c6): success
+Sketch uses 996569 bytes (76%) of program storage space. Maximum is 1310720 bytes.
+Global variables use 43160 bytes (13%) of dynamic memory, leaving 284520 bytes for local variables. Maximum is 327680 bytes.
+
+Debug APK SHA256: DD367F4631E9A1D138811FCBE74170BAAC8A2C6C55019DD53469AF58257CD085
+No physical sensor or battery measurement was performed in this check.
