@@ -35,7 +35,7 @@
     <string name="export_cancelled">CSV 저장을 취소했습니다. 내부 기록은 유지됩니다.</string>
     <string name="export_failed">CSV 저장 실패: %1$s</string>
     <string name="subtitle">건조대 주변을 확인하고 기록하세요.</string>
-    <string name="version_badge">v0.4.0</string>
+    <string name="version_badge">v0.4.1</string>
     <string name="product_label">DISHDRY</string>
     <string name="connection_title">센서 연결</string>
     <string name="connection_help">ESP32 Wi-Fi에 연결한 뒤 주소를 입력하세요. 비워 두면 휴대폰 센서만 사용합니다.</string>
@@ -72,6 +72,6 @@
     <string name="example_connected">샘플 센서값을 확인하고 기록할 수 있어요.</string>
     <string name="example_drying">온습도·빛으로 계산한 화면 확인용 지수</string>
     <string name="example_record_notice">샘플 기록</string>
-    <string name="device_caption">접시 건조대 · ESP32 온습도·빛 센서 구성</string>
-    <string name="device_picture_description">접시 건조대 옆 DHT22·빛 센서와 ESP32 보드의 구성 그림</string>
+    <string name="device_caption">ESP32-C6 · 건전지 전원 센서 구성</string>
+    <string name="device_picture_description">접시 건조대 옆 온습도·빛 센서와 ESP32-C6 개발보드, AA 건전지 팩 구성 그림</string>
 </resources>

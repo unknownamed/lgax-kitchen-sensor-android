@@ -169,6 +169,19 @@ for _ in range(12):
     time.sleep(0.4)
 assert buttons, "System save button not found"
 assert all(f"dish-dry-example-0{i}.csv" in names for i in range(1, 4)), names
+# List view keeps all three filenames readable in the original capture.
+list_switches = [n for n in tree.iter("node")
+                 if "list" in n.get("content-desc", "").lower()
+                 and n.get("clickable") == "true"]
+if list_switches:
+    tap(list_switches[0])
+else:
+    width, height = screen_size()
+    adb("shell", "input", "tap", str(width*91//100), str(height*23//100))
+    time.sleep(0.5)
+tree = hierarchy()
+assert all(any(n.get("text") == f"dish-dry-example-0{i}.csv" for n in tree.iter("node"))
+           for i in range(1, 4))
 screenshot("04-system-export.png")
 tap(buttons[-1])
 wait_node("record_count", text="3개")
