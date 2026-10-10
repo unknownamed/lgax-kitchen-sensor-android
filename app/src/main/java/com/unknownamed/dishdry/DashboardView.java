@@ -58,10 +58,11 @@ final class DashboardView {
         text(humidity, number(reading == null ? null : reading.humidity));
         text(ldr, reading == null ? string(R.string.not_measured) : String.valueOf(reading.lightAdc));
         text(light, controller.hasLightSensor() ? number(snapshot.lux) : string(R.string.sensor_absent));
-        text(motion, controller.hasMotionSensor() ? number(snapshot.movement) : string(R.string.sensor_absent));
+        text(motion, controller.hasMotionSensor() ? number(snapshot.movement, 2) : string(R.string.sensor_absent));
         int index = reading == null ? 0 : reading.dryingIndex();
         text(drying, reading == null ? string(R.string.reading_placeholder) : String.valueOf(index));
-        text(dryingStatus, string(reading != null ? R.string.drying_ready
+        text(dryingStatus, string(controller.isExamplePreview() ? R.string.example_drying
+                : reading != null ? R.string.drying_ready
                 : controller.connection() == MeasurementController.Connection.PHONE_ONLY ? R.string.drying_phone_only
                 : controller.isRunning() ? R.string.drying_waiting : R.string.drying_idle));
         if (progress.getProgress() != index) progress.setProgress(index);
@@ -72,13 +73,14 @@ final class DashboardView {
         text(status, connectionText(controller));
         text(connectionBadge, string(connectionBadgeText(controller)));
         text(toggle, string(controller.isRunning() ? R.string.stop : R.string.start));
-        endpoint.setEnabled(!controller.isRunning());
+        endpoint.setEnabled(!controller.isRunning() && !controller.isExamplePreview());
         save.setEnabled(!busy && controller.isRunning() && snapshot.hasValues());
         export.setEnabled(!busy && summary.count > 0);
     }
 
     private int connectionBadgeText(MeasurementController controller) {
         switch (controller.connection()) {
+            case EXAMPLE: return R.string.badge_example;
             case PHONE_ONLY: return R.string.badge_phone;
             case CONNECTING: return R.string.badge_connecting;
             case CONNECTED: return R.string.badge_connected;
@@ -90,6 +92,7 @@ final class DashboardView {
 
     private String connectionText(MeasurementController controller) {
         switch (controller.connection()) {
+            case EXAMPLE: return string(R.string.example_connected);
             case PHONE_ONLY: return string(R.string.phone_only);
             case CONNECTING: return string(R.string.connecting);
             case CONNECTED: return activity.getString(R.string.connected, controller.detail());
@@ -118,7 +121,12 @@ final class DashboardView {
     private String string(int resource) { return activity.getString(resource); }
 
     private String number(Number value) {
-        return value == null ? string(R.string.not_measured) : String.format(Locale.US, "%.1f", value.doubleValue());
+        return number(value, 1);
+    }
+
+    private String number(Number value, int decimals) {
+        return value == null ? string(R.string.not_measured)
+                : String.format(Locale.US, "%." + decimals + "f", value.doubleValue());
     }
 
     private static void text(TextView view, String value) {

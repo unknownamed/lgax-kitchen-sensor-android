@@ -2,11 +2,13 @@ package com.unknownamed.dishdry;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.WindowInsets;
+import android.view.View;
 import android.widget.Toast;
 
 import java.io.File;
@@ -26,14 +28,19 @@ public class MainActivity extends Activity {
     private RecordStore.Summary summary = new RecordStore.Summary(0, null);
     private boolean fileBusy;
     private volatile boolean destroyed;
+    private boolean examplePreview;
 
     @Override protected void onCreate(Bundle state) {
         super.onCreate(state);
         setContentView(R.layout.activity_main);
         applySystemInsets();
         screen = new DashboardView(this);
-        measurements = new MeasurementController(this, this::render);
-        records = new RecordStore(new File(getFilesDir(), "readings.csv"));
+        examplePreview = (getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0
+                && getIntent().getBooleanExtra("example_preview", false);
+        findViewById(R.id.example_notice).setVisibility(examplePreview ? View.VISIBLE : View.GONE);
+        findViewById(R.id.example_record_notice).setVisibility(examplePreview ? View.VISIBLE : View.GONE);
+        measurements = new MeasurementController(this, this::render, examplePreview);
+        records = new RecordStore(new File(getFilesDir(), examplePreview ? "example-readings.csv" : "readings.csv"));
         screen.endpoint.setText(getPreferences(MODE_PRIVATE).getString("endpoint", ""));
         screen.toggle.setOnClickListener(view -> toggleMeasurement());
         screen.save.setOnClickListener(view -> saveReading());
@@ -69,6 +76,10 @@ public class MainActivity extends Activity {
             return;
         }
         try {
+            if (examplePreview) {
+                measurements.start("");
+                return;
+            }
             String endpoint = SensorHttpClient.validateEndpoint(screen.endpoint.getText().toString());
             getPreferences(MODE_PRIVATE).edit().putString("endpoint", endpoint).apply();
             measurements.start(endpoint);
@@ -116,7 +127,7 @@ public class MainActivity extends Activity {
         Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("text/csv");
-        intent.putExtra(Intent.EXTRA_TITLE, "dish-dry-readings.csv");
+        intent.putExtra(Intent.EXTRA_TITLE, examplePreview ? "dish-dry-example-readings.csv" : "dish-dry-readings.csv");
         startActivityForResult(intent, EXPORT_CSV);
     }
 

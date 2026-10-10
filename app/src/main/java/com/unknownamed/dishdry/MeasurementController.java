@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
 
 /** Owns sensor registration, polling, and rejection of replies from a stopped session. */
 final class MeasurementController implements SensorEventListener, AutoCloseable {
-    enum Connection { IDLE, PHONE_ONLY, CONNECTING, CONNECTED, FAILED, RETRYING }
+    enum Connection { IDLE, PHONE_ONLY, CONNECTING, CONNECTED, FAILED, RETRYING, EXAMPLE }
     private static final long POLL_MS = 5_000;
     private static final DateTimeFormatter TIME = DateTimeFormatter.ofPattern("HH:mm:ss");
     private final Handler ui = new Handler(Looper.getMainLooper());
@@ -27,6 +27,7 @@ final class MeasurementController implements SensorEventListener, AutoCloseable 
     private final Sensor light;
     private final Sensor accelerometer;
     private final Runnable changed;
+    private final boolean examplePreview;
     private int session;
     private int pendingSession = -1;
     private volatile boolean closed;
@@ -35,8 +36,9 @@ final class MeasurementController implements SensorEventListener, AutoCloseable 
     private String detail = "";
     private SensorHttpClient.RequestFailure failure;
 
-    MeasurementController(Context context, Runnable changed) {
+    MeasurementController(Context context, Runnable changed, boolean examplePreview) {
         this.changed = changed;
+        this.examplePreview = examplePreview;
         sensors = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         light = sensors == null ? null : sensors.getDefaultSensor(Sensor.TYPE_LIGHT);
         accelerometer = sensors == null ? null : sensors.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -45,7 +47,8 @@ final class MeasurementController implements SensorEventListener, AutoCloseable 
     private final Runnable poll = new Runnable() {
         @Override public void run() {
             if (!isRunning() || closed) return;
-            if (!endpoint.isEmpty() && pendingSession != session) fetchReading();
+            if (examplePreview) fillExampleValues();
+            else if (!endpoint.isEmpty() && pendingSession != session) fetchReading();
             changed.run();
             ui.postDelayed(this, POLL_MS);
         }
@@ -57,9 +60,11 @@ final class MeasurementController implements SensorEventListener, AutoCloseable 
         session++;
         this.endpoint = endpoint;
         state.start();
-        if (light != null) sensors.registerListener(this, light, SensorManager.SENSOR_DELAY_NORMAL);
-        if (accelerometer != null) sensors.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-        connection = endpoint.isEmpty() ? Connection.PHONE_ONLY : Connection.CONNECTING;
+        if (!examplePreview && light != null) sensors.registerListener(this, light, SensorManager.SENSOR_DELAY_NORMAL);
+        if (!examplePreview && accelerometer != null) sensors.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        connection = examplePreview ? Connection.EXAMPLE
+                : endpoint.isEmpty() ? Connection.PHONE_ONLY : Connection.CONNECTING;
+        if (examplePreview) fillExampleValues();
         detail = "";
         failure = null;
         changed.run();
@@ -78,12 +83,23 @@ final class MeasurementController implements SensorEventListener, AutoCloseable 
     }
 
     boolean isRunning() { return state.isRunning(); }
-    boolean hasLightSensor() { return light != null; }
-    boolean hasMotionSensor() { return accelerometer != null; }
+    boolean hasLightSensor() { return examplePreview || light != null; }
+    boolean hasMotionSensor() { return examplePreview || accelerometer != null; }
+    boolean isExamplePreview() { return examplePreview; }
     Connection connection() { return connection; }
     String detail() { return detail; }
     SensorHttpClient.RequestFailure failure() { return failure; }
-    ReadingSnapshot snapshot() { return state.snapshot(SystemClock.elapsedRealtime()); }
+    ReadingSnapshot snapshot() {
+        if (examplePreview && isRunning()) fillExampleValues();
+        return state.snapshot(SystemClock.elapsedRealtime());
+    }
+
+    private void fillExampleValues() {
+        long now = SystemClock.elapsedRealtime();
+        state.receive(SensorReading.validated(25, 50, 1000, 0), now);
+        state.updateLight(320f);
+        state.updateMotion(0.12f, now);
+    }
 
     private void fetchReading() {
         final int requestedSession = session;
@@ -117,7 +133,7 @@ final class MeasurementController implements SensorEventListener, AutoCloseable 
     }
 
     @Override public void onSensorChanged(SensorEvent event) {
-        if (!isRunning()) return;
+        if (!isRunning() || examplePreview) return;
         if (event.sensor.getType() == Sensor.TYPE_LIGHT) {
             state.updateLight(event.values[0]);
         } else if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
