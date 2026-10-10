@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
 
 /** Owns sensor registration, polling, and rejection of replies from a stopped session. */
 final class MeasurementController implements SensorEventListener, AutoCloseable {
-    enum Connection { IDLE, PHONE_ONLY, CONNECTING, CONNECTED, FAILED }
+    enum Connection { IDLE, PHONE_ONLY, CONNECTING, CONNECTED, FAILED, RETRYING }
     private static final long POLL_MS = 5_000;
     private static final DateTimeFormatter TIME = DateTimeFormatter.ofPattern("HH:mm:ss");
     private final Handler ui = new Handler(Looper.getMainLooper());
@@ -33,6 +33,7 @@ final class MeasurementController implements SensorEventListener, AutoCloseable 
     private String endpoint = "";
     private Connection connection = Connection.IDLE;
     private String detail = "";
+    private SensorHttpClient.RequestFailure failure;
 
     MeasurementController(Context context, Runnable changed) {
         this.changed = changed;
@@ -60,6 +61,7 @@ final class MeasurementController implements SensorEventListener, AutoCloseable 
         if (accelerometer != null) sensors.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         connection = endpoint.isEmpty() ? Connection.PHONE_ONLY : Connection.CONNECTING;
         detail = "";
+        failure = null;
         changed.run();
         ui.post(poll);
     }
@@ -71,6 +73,7 @@ final class MeasurementController implements SensorEventListener, AutoCloseable 
         if (sensors != null) sensors.unregisterListener(this);
         connection = Connection.IDLE;
         detail = "";
+        failure = null;
         if (!closed) changed.run();
     }
 
@@ -79,29 +82,35 @@ final class MeasurementController implements SensorEventListener, AutoCloseable 
     boolean hasMotionSensor() { return accelerometer != null; }
     Connection connection() { return connection; }
     String detail() { return detail; }
+    SensorHttpClient.RequestFailure failure() { return failure; }
     ReadingSnapshot snapshot() { return state.snapshot(SystemClock.elapsedRealtime()); }
 
     private void fetchReading() {
         final int requestedSession = session;
         final String requestedUrl = endpoint;
         pendingSession = requestedSession;
+        if (connection == Connection.FAILED) connection = Connection.RETRYING;
         network.execute(() -> {
             SensorReading reading = null;
-            String failure = "";
+            SensorHttpClient.RequestFailure requestFailure = null;
             try {
                 reading = client.fetch(requestedUrl);
+            } catch (SensorHttpClient.RequestFailure error) {
+                requestFailure = error;
             } catch (Exception error) {
-                failure = error.getMessage() == null ? error.getClass().getSimpleName() : error.getMessage();
+                requestFailure = new SensorHttpClient.RequestFailure(
+                        SensorHttpClient.Failure.COMMUNICATION, 0, error);
             }
             final SensorReading result = reading;
-            final String message = failure;
+            final SensorHttpClient.RequestFailure failed = requestFailure;
             if (closed) return;
             ui.post(() -> {
                 if (pendingSession == requestedSession) pendingSession = -1;
                 if (closed || !isRunning() || requestedSession != session) return;
                 state.receive(result, SystemClock.elapsedRealtime());
                 connection = result == null ? Connection.FAILED : Connection.CONNECTED;
-                detail = result == null ? message : LocalTime.now().format(TIME);
+                failure = failed;
+                detail = result == null ? "" : LocalTime.now().format(TIME);
                 changed.run();
             });
         });

@@ -74,8 +74,25 @@ final class DashboardView {
             case PHONE_ONLY: return string(R.string.phone_only);
             case CONNECTING: return string(R.string.connecting);
             case CONNECTED: return activity.getString(R.string.connected, controller.detail());
-            case FAILED: return activity.getString(R.string.connection_failed, controller.detail());
+            case FAILED: return activity.getString(R.string.connection_failed, failureText(controller.failure()))
+                    + "\n" + string(R.string.retry_scheduled);
+            case RETRYING: return string(R.string.retry_connecting)
+                    + "\n" + failureText(controller.failure());
             default: return string(R.string.idle);
+        }
+    }
+
+    private String failureText(SensorHttpClient.RequestFailure failure) {
+        if (failure == null) return string(R.string.failure_communication);
+        switch (failure.reason) {
+            case TIMEOUT: return string(R.string.failure_timeout);
+            case UNREACHABLE: return string(R.string.failure_unreachable);
+            case ADDRESS_NOT_FOUND: return string(R.string.failure_address);
+            case SENSOR_UNAVAILABLE: return string(R.string.failure_sensor_unavailable);
+            case HTTP_RESPONSE: return activity.getString(R.string.failure_http, failure.httpStatus);
+            case INVALID_READING: return string(R.string.failure_reading);
+            case RESPONSE_TOO_LARGE: return string(R.string.failure_response_size);
+            default: return string(R.string.failure_communication);
         }
     }
 
