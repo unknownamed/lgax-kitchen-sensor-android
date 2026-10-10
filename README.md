@@ -8,21 +8,36 @@
 
 <img src="docs/images/app-icon.png" width="88" alt="붉은 바탕의 접시와 물방울 앱 아이콘">
 
-v0.3.1은 LG Red와 따뜻한 회색을 참고한 화면, 접시·물방울 아이콘, 연결 상태 배지와 센서별 카드를 사용합니다. 측정 버튼을 짧게 배치하고 기록·내보내기 버튼을 한 줄로 정리했습니다. [화면 디자인 기준](docs/DESIGN_NOTES.md).
+v0.4.1은 ESP32-C6 개발보드와 건전지 전원 구성을 기준으로 합니다. 접시 건조대·센서·건전지 그림을 지수와 기록 카드에 넣어 어떤 장치의 수치인지 바로 알아볼 수 있게 했습니다. LG Red와 따뜻한 회색, 작은 측정 버튼과 가로 기록 버튼을 유지합니다. [화면 디자인 기준](docs/DESIGN_NOTES.md).
 
 ![접시 건조대의 온습도·빛 센서, ESP32 보드와 새 Android 화면 구성 개념도](docs/images/dishdry-sensor-sketch.png)
 
-*접시 건조대 옆 센서와 v0.3.1 앱을 연결하는 구성 목업. 화면 수치는 예시 데이터이며, 실물 장치 실행 사진이 아닙니다.*
+*접시 건조대·ESP32-C6 센서·AA 건전지 팩 구성 그림. 앱 화면은 샘플 데이터로 표현했습니다.*
 
-## 앱 실제 실행 화면
+## 앱 실행 화면
 
-v0.3.1 APK를 Android API 30 에뮬레이터에서 실행한 원본 캡처입니다. 접시·물방울 심볼, 붉은 버튼과 지수, 따뜻한 회색 바탕, 작은 동작 버튼과 센서 카드를 적용했습니다. ESP32는 연결하지 않았고, 기록 1개는 에뮬레이터의 가상 휴대폰 센서 값으로 저장한 것입니다.
+v0.4.1 개발용 APK를 Android API 30 에뮬레이터에서 실행한 원본 캡처입니다. 화면 확인용 샘플 데이터로 온도 25°C·습도 50%·빛 ADC 1000·지수 57을 표시하고, 앱 버튼으로 기록 3개를 저장했습니다. 다운로드 폴더에도 샘플 CSV 3개를 넣어 파일 선택과 저장 흐름을 확인합니다.
 
-| 연결 대기 | 현재 값 기록 | 시스템 CSV 저장 |
+| 장치와 지수 | 현재 값 기록 | 시스템 CSV 저장 |
 | --- | --- | --- |
-| <img src="docs/images/screenshots/01-overview.png" width="230" alt="실제 앱 연결 대기 화면"> | <img src="docs/images/screenshots/03-record-saved.png" width="230" alt="실제 앱에서 가상 휴대폰 센서 값 한 건을 기록한 화면"> | <img src="docs/images/screenshots/04-system-export.png" width="230" alt="Android 시스템 파일 선택기의 CSV 저장 화면"> |
+| <img src="docs/images/screenshots/01-overview.png" width="230" alt="장치 그림과 샘플 지수를 표시하는 앱 실행 화면"> | <img src="docs/images/screenshots/03-record-saved.png" width="230" alt="앱 버튼으로 샘플 센서값 세 건을 저장한 실행 화면"> | <img src="docs/images/screenshots/04-system-export.png" width="230" alt="샘플 CSV 세 개가 보이는 Android 시스템 저장 화면"> |
 
-앱 실행, 현재 값 기록, CSV 실제 파일 내용 일치, 저장·취소 후 앱 복귀, 재시작 후 기록 유지, 320dp 너비·130% 글자 크기를 확인했습니다. [전체 실행 캡처 9장](docs/images/screenshots), [실행 결과 원문](docs/logs/2026-10-10-v0.3.1-android-emulator.txt), [실행 일지](docs/RUN_LOG.md).
+앱 실행, 표시값 기록, 내보낸 CSV 내용 일치, 저장·취소·재시작과 320dp·130% 글자 크기를 확인했습니다. 일반 측정 기록과 샘플 기록은 별도 CSV에 저장합니다. [전체 실행 캡처](docs/images/screenshots), [실행 결과](docs/logs/2026-10-10-v0.4.1-android-emulator.txt), [실행 일지](docs/RUN_LOG.md).
+
+## 연결 대상 장치
+
+<img src="docs/images/sensor-setup.png" width="300" alt="접시 건조대 옆 온습도·빛 센서와 ESP32 보드 구성">
+
+| 구성 | 역할 |
+| --- | --- |
+| 일반 접시 건조대 | 식기와 센서의 설치 위치 |
+| ESP32-C6-WROOM-1 개발보드 | 센서 측정값과 Wi-Fi 연결, DevKitC-1 헤더 배치 |
+| AA 알카라인 3개·스위치 홀더 | 설치 시 전원 |
+| 정전압 5V 승압 모듈 | 건전지 전원을 보드 5V 입력에 공급 |
+| DHT22 | 건조대 주변 온도·습도 |
+| LDR + 10kΩ 저항 | 주변 빛의 ADC 원시값 |
+
+펌웨어의 연결 기준은 DHT22 DATA `GPIO18`, LDR 측정 지점 `GPIO0`입니다. 전원은 `AA 3개 → 5V 승압 → 보드 5V·GND`로 연결하고 센서는 보드의 3V3를 사용합니다. [사진의 기준 보드](docs/images/esp32-c6-board-reference.png), [배선·전원 안내](docs/WIRING.md).
 
 현재 화면은 [LG 공식 디자인 시스템](https://www.lg.com/global/our-identity/design-system/)의 둥근 형태와 [공식 색상 가이드](https://www.lg.com/us/wonderbox/Wonderbox-GuidelinesSpecs.pdf)를 참고해 Android 기본 글꼴과 위젯에 맞게 적용했습니다. 이전 [Apple 웹디자인 분석 DESIGN.md](DESIGN.md)는 참고 기록으로 보관합니다. [적용 기준과 출처](docs/DESIGN_NOTES.md).
 
@@ -45,10 +60,12 @@ flowchart TD
     subgraph rack["접시 건조대 옆 센서"]
         DHT["DHT22 온습도 센서"]
         LDR["LDR 빛 센서 + 10kΩ 저항"]
-        ESP["ESP32 펌웨어 · 3초마다 측정"]
+        ESP["ESP32-C6 개발보드 · 3초마다 측정"]
+        BAT["AA 건전지 3개 + 5V 승압"]
         API["Wi-Fi AP · GET /readings"]
-        DHT -->|GPIO4| ESP
-        LDR -->|GPIO34 · ADC| ESP
+        DHT -->|GPIO18| ESP
+        LDR -->|GPIO0 · ADC| ESP
+        BAT -->|"5V·GND 전원"| ESP
         ESP -->|"온도·습도·빛 ADC·측정 경과 시간"| API
     end
 
@@ -81,7 +98,7 @@ flowchart TD
     API -->|"같은 Wi-Fi · HTTP JSON"| HTTP
     classDef device fill:#ffffff,stroke:#e2dcd6,color:#262626
     classDef app fill:#ffffff,stroke:#a50034,color:#262626
-    class DHT,LDR,ESP,API device
+    class DHT,LDR,ESP,API,BAT device
     class MAIN,CONTROL,HTTP,PARSE,STATE,SNAP,SCREEN,INDEX,PHONE,FILE,EXPORT app
     style rack fill:#f6f3ef,stroke:#e2dcd6,color:#262626
     style phone fill:#f6f3ef,stroke:#e2dcd6,color:#262626
@@ -95,9 +112,9 @@ flowchart TD
 
 ![센서 Wi-Fi 연결, 측정값 확인, 현재 값 기록, CSV 저장으로 이어지는 4컷 사용 시나리오](docs/images/user-scenario.png)
 
-*새 화면 디자인으로 맞춘 4컷 개념 시나리오. 화면 수치와 기록 3개는 이해를 돕는 예시 데이터이며, 실물 센서 실행 기록이 아닙니다.*
+*연결, 측정값 확인, 기록과 저장으로 이어지는 화면 예시입니다.*
 
-저장 목업의 `dish-dry-01.csv`·`dish-dry-02.csv`·`dish-dry-03.csv`는 파일 목록을 설명하는 예시입니다. 저장 화면의 로고와 붉은 버튼은 스타일을 통일한 목업 디자인이며, 실제 시스템 파일 선택기는 기기의 디자인을 따릅니다.
+저장 목업의 파일 목록은 `dish-dry-example-01.csv`·`dish-dry-example-02.csv`·`dish-dry-example-03.csv`로 맞췄습니다. 실제 시스템 파일 선택기는 기기의 디자인을 따릅니다.
 
 ## 화면 와이어프레임과 사용 흐름
 
@@ -110,7 +127,7 @@ flowchart TD
 3. **현재 값 기록** — `현재 값 기록`을 누른 시점의 유효한 값을 앱 내부 CSV에 한 줄씩 저장합니다. 미측정 항목은 빈칸으로 남고, 모든 값이 없으면 저장하지 않습니다.
 4. **CSV 저장** — `CSV 내보내기`를 눌러 시스템 파일 선택기에서 저장 위치를 고릅니다. 파일 이름은 `dish-dry-readings.csv`입니다. 저장된 기록이 없으면 내보내기를 진행하지 않습니다.
 
-연결 준비 화면의 대시는 측정 전 상태를 뜻합니다. 예시 수치는 개념 그림에만 사용하며, 위의 실제 앱 실행 캡처와 검증 로그는 원본입니다. 파일 선택기를 포함해 앱 화면을 벗어나면 측정은 중지됩니다. 앱에 돌아온 뒤 계속 측정하려면 `측정 시작`을 다시 눌러야 합니다.
+와이어프레임과 샘플 실행 화면은 같은 수치를 사용합니다. 파일 선택기를 포함해 앱 화면을 벗어나면 측정은 중지됩니다. 앱에 돌아온 뒤 계속 측정하려면 `측정 시작`을 다시 눌러야 합니다.
 
 ## 지금 구현된 것
 
@@ -150,17 +167,20 @@ Windows에서는 `gradlew.bat assembleDebug`를 실행합니다. APK는 `app/bui
 
 ## ESP32 연결
 
-기준 보드는 일반 ESP32 DevKit입니다. ESP32-C3 등 다른 보드는 아래 핀 번호를 그대로 사용할 수 없습니다.
+기준은 사진의 ESP32-C6-WROOM-1 개발보드와 DevKitC-1 헤더 배치입니다. Arduino 보드는 `ESP32C6 Dev Module`을 선택합니다.
 
 [배선 그림과 확인 순서](docs/WIRING.md)에서 온습도 센서의 풀업과 빛 센서의 분압 연결을 각각 확인할 수 있습니다.
 
 | 부품 | 연결 |
 | --- | --- |
 | DHT22 VCC / GND | 3.3V / GND |
-| DHT22 DATA | GPIO4, DATA와 3.3V 사이 10kΩ 풀업 |
-| LDR | 3.3V → LDR → GPIO34 → 10kΩ 저항 → GND |
+| DHT22 DATA | GPIO18, DATA와 3.3V 사이 10kΩ 풀업 |
+| LDR | 3.3V → LDR → GPIO0 → 10kΩ 저항 → GND |
+| 설치 전원 | AA 3개 → 정전압 5V 승압 모듈 → 보드 5V·GND |
 
 Arduino IDE에 ESP32 보드 패키지와 Adafruit `DHT sensor library` 및 `Adafruit Unified Sensor`를 설치하고 `firmware/dish_dry_sensor/dish_dry_sensor.ino`를 업로드합니다.
+
+USB는 업로드할 때 사용합니다. 건전지 설치 상태에서는 USB를 분리하고, USB 업로드 전에는 승압 모듈 출력을 보드에서 분리합니다. 현재 Wi-Fi AP 방식의 건전지 사용 시간과 소비 전류는 실물 확인 항목입니다.
 
 펌웨어가 만드는 개발용 Wi-Fi `DishDrySensor-ESP32`에 연결합니다. 개발용 비밀번호는 `dishdry123`입니다. 인터넷이 없는 네트워크이므로 Android의 연결 유지 안내를 선택해야 할 수 있습니다.
 

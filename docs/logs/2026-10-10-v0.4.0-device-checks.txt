@@ -1,0 +1,15 @@
+Run: https://github.com/unknownamed/lgax-kitchen-sensor-android/actions/runs/38039642606
+Commit: 36760c6
+Date (Korea): 2026-10-10
+
+Gradle testDebugUnitTest assembleDebug lintDebug: success
+Unit tests: {'tests': 20, 'failures': 0, 'errors': 0, 'skipped': 0}
+Lint: {'Warning': 7}
+
+Warning OldTargetApi: Not targeting the latest versions of Android; compatibility modes apply. Consider testing and updating this version. Consult the `android.os.Build.VERSION_CODES` javadoc for details.
+Warning DataExtractionRules: The attribute `android:allowBackup` is deprecated from Android 12 and higher and may be removed in future versions. Consider adding the attribute `android:dataExtractionRules` specifying an `@xml` resource which configures cloud backups and device transfers on Android 12 and higher.
+Warning UseCompoundDrawables: This tag and its children can be replaced by one `<TextView/>` and a compound drawable
+Warning UseCompoundDrawables: This tag and its children can be replaced by one `<TextView/>` and a compound drawable
+Warning UseCompoundDrawables: This tag and its children can be replaced by one `<TextView/>` and a compound drawable
+Warning UseCompoundDrawables: This tag and its children can be replaced by one `<TextView/>` and a compound drawable
+Warning Overdraw: Possible overdraw: Root element paints background `@color/page` with a theme that also paints a background (inferred theme is `@style/Theme.DishDry`)

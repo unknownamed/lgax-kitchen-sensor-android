@@ -1,0 +1,17 @@
+Run: https://github.com/unknownamed/lgax-kitchen-sensor-android/actions/runs/38040135551
+Commit: aa74fa5
+Date (Korea): 2026-10-10
+Context: Android emulator, debug sample data
+
+Android API 30 emulator
+Data source: explicitly labeled debug example preview
+ESP32 hardware: not connected
+Ordinary launch remains real sensor mode: passed
+Product illustration and example values 25/50/1000/320/0.12/index 57: passed
+Three example CSV records created through app buttons: passed
+Downloads contains three labeled example CSV files: passed
+CSV saved file equality and cancellation: passed
+Example record persistence after restart: passed
+Normal and example CSV storage isolation: passed
+320dp screen with 130% font scale: passed
+Runtime fatal exception: none

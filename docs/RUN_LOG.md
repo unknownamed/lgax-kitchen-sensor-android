@@ -135,13 +135,33 @@ SVG 문법과 렌더링을 확인하고, 두 PNG의 화면 수치와 예시 표�
 
 최종 코드 `41264bf`의 [빌드 결과](https://github.com/unknownamed/lgax-kitchen-sensor-android/actions/runs/38037627848)는 성공이다. 단위 테스트 20개가 실패·오류·생략 없이 통과했고 APK 빌드와 lint를 완료했다. lint는 오류 0개, 경고 7개다. 기존 대상 버전·백업 규칙·배경 겹침 경고 3개와 새 아이콘/글자 행을 복합 drawable로 줄일 수 있다는 제안 4개다. [검증 결과 원문](logs/2026-10-10-v0.3.1-compact-checks.txt).
 
-최종 [에뮬레이터 실행](https://github.com/unknownamed/lgax-kitchen-sensor-android/actions/runs/38037627986)도 통과했다. 시작·중지·상태 배지, 가상 센서 값 기록, CSV 저장 내용 일치, 취소와 재시작 후 기록 유지, 320dp·130% 글자 크기의 버튼을 확인했다. 두 버튼의 이름이 한 줄로 보이고 전체 버튼이 화면 안에 들어오는 것을 원본 캡처와 위치 정보로 확인했다. 치명적 Runtime 예외는 없었다. [원문 결과와 CSV](logs/2026-10-10-v0.3.1-android-emulator.txt), [실행 캡처 9장](images/screenshots). 실제 ESP32는 연결하지 않았다.
+최종 [에뮬레이터 실행](https://github.com/unknownamed/lgax-kitchen-sensor-android/actions/runs/38037627986)도 통과했다. 시작·중지·상태 배지, 가상 센서 값 기록, CSV 저장 내용 일치, 취소와 재시작 후 기록 유지, 320dp·130% 글자 크기의 버튼을 확인했다. 두 버튼의 이름이 한 줄로 보이고 전체 버튼이 화면 안에 들어오는 것을 원본 캡처와 위치 정보로 확인했다. 치명적 Runtime 예외는 없었다. [원문 결과와 CSV](logs/2026-10-10-v0.3.1-android-emulator.txt), [당시 실행 캡처 9장](https://github.com/unknownamed/lgax-kitchen-sensor-android/tree/16fa8c9/docs/images/screenshots). 실제 ESP32는 연결하지 않았다.
 
 ## 2026-10-10 · 배선 안내 정리
 
 현재 펌웨어의 DHT GPIO4·LDR GPIO34·3초 측정 간격을 대조해 [배선 안내](WIRING.md)를 추가했다. 온습도 DATA 풀업과 빛 센서 분압 연결을 분리한 그림, 부품 목록, 업로드·Serial·Wi-Fi·HTTP·앱 확인 순서와 증상별 연결 확인을 정리했다. Espressif와 Adafruit의 공식 핀·배선 문서를 참고했다. README 구조도의 색상도 현재 붉은색·따뜻한 회색 기준으로 맞췄다.
 
 문서의 핀 번호·주소·Serial 속도·측정 간격을 소스와 대조하고 로컬 문서 링크와 diff를 확인했다. Android 코드와 펌웨어는 변경하지 않았으며 이번 작업에서 새 빌드나 실물 배선·측정을 수행하지 않았다.
+
+## 2026-10-10 · v0.4.0 장치 그림과 샘플 실행
+
+장치 구성 그림을 지수·기록 카드 안에 추가하고, 개발용 APK에서 출처가 표시된 샘플 화면을 실행하도록 했다. 일반 실행은 실제 센서 모드이며, 샘플 화면의 `example-readings.csv`와 내보내는 `dish-dry-example-readings.csv`를 일반 측정 기록과 분리한다. 샘플 파일 3개는 개발용 화면이 Android MediaStore를 통해 다운로드 폴더에 만든다.
+
+온도 25°C·습도 50%·빛 ADC 1000·휴대폰 조도 320 lx·움직임 0.12·지수 57의 화면 표시와 앱 버튼을 통한 기록 3개를 확인했다. [v0.4.0 실행](https://github.com/unknownamed/lgax-kitchen-sensor-android/actions/runs/38040135551), 코드 `aa74fa5`는 CSV 파일 3개 표시, 내보내기 내용 일치, 취소·재시작 후 기록 유지, 일반 기록과의 분리, 320dp·130% 글자 크기 확인을 통과했다.
+
+첫 캡처 시도는 Android 셸의 insert 명령이 URI를 반환할 것이라고 가정해 중단됐고, 다음 시도는 파일 제공자의 셸 쓰기 권한 검사에서 중단됐다. 앱의 ContentResolver와 보류 파일 공개 절차로 변경한 뒤 성공했다. 해당 시행 과정은 실물 센서 테스트를 뜻하지 않는다.
+
+## 2026-10-10 · v0.4.1 ESP32-C6와 건전지 구성
+
+제공된 ESP32-C6-WROOM-1 보드 사진을 기준으로 DevKitC-1 헤더 배치와 전원 구성을 정리했다. 펌웨어는 DHT22 GPIO18·LDR GPIO0과 `esp32:esp32:esp32c6` 빌드 대상으로 변경했다. 다른 ESP32 대상에서는 이 배선으로 빌드되지 않도록 대상 검사를 추가했고, 기존 응답 필드를 유지하면서 board 식별 필드를 추가했다.
+
+설치 전원은 AA 알카라인 3개·스위치 홀더·정전압 5V 승압 모듈·보드 5V/GND로 정했다. 업로드 USB와 설치 전원을 분리하는 절차를 [배선 안내](WIRING.md)에 적었다. 건전지 팩과 C6 보드를 앱의 장치 그림·와이어프레임·구성도·시나리오에 반영한다. 사용 시간·부하 시 전압·실물 센서값은 아직 측정하지 않았다.
+
+첫 C6 빌드 대상 `293f211`의 [GitHub Actions](https://github.com/unknownamed/lgax-kitchen-sensor-android/actions/runs/38041136321)는 Android와 ESP32-C6 펌웨어 빌드를 완료했다. 실제 보드 업로드·건전지 운용 검증과 구분한다.
+
+최종 코드 `5f03ad8`의 [빌드 결과](https://github.com/unknownamed/lgax-kitchen-sensor-android/actions/runs/38041347077)는 성공이다. 단위 테스트 20개가 실패·오류·생략 없이 통과했고 APK 빌드와 lint를 완료했다. lint는 오류 0개·경고 7개다. C6 펌웨어는 프로그램 996569 bytes, 전역 변수 43160 bytes로 컴파일됐다. [검증 결과](logs/2026-10-10-v0.4.1-c6-checks.txt).
+
+같은 코드의 [최종 에뮬레이터 실행](https://github.com/unknownamed/lgax-kitchen-sensor-android/actions/runs/38041346890)도 통과했다. C6·건전지 장치 그림, 샘플 수치와 기록 3개, 다운로드의 CSV 3개 목록, 내보낸 내용 일치, 취소·재시작, 일반·샘플 기록 분리와 320dp·130% 글자 크기를 확인했다. 시스템 파일 선택기는 목록 보기로 캡처해 파일 이름 세 개가 모두 보인다. [결과와 샘플 CSV](logs/2026-10-10-v0.4.1-android-emulator.txt), [현재 실행 캡처](images/screenshots). Android Runtime 치명적 예외는 없었다.
 
 ## 실물 ESP32 실행 기록 · 확인 대기
 
