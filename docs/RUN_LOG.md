@@ -121,9 +121,21 @@ SVG 문법과 렌더링을 확인하고, 두 PNG의 화면 수치와 예시 표�
 | 320dp 화면·130% 글자 크기의 기록·내보내기 버튼 | 성공 |
 | Android Runtime 치명적 예외 | 없음 |
 
-[원문 결과와 CSV](logs/2026-10-10-v0.3.0-android-emulator.txt), [현재 실행 캡처 9장](images/screenshots). 이전 v0.2.0 화면은 [해당 커밋의 원본](https://github.com/unknownamed/lgax-kitchen-sensor-android/tree/0141018/app)과 [캡처](https://github.com/unknownamed/lgax-kitchen-sensor-android/tree/0141018/docs/images/screenshots)에 보관되어 있다.
+[원문 결과와 CSV](logs/2026-10-10-v0.3.0-android-emulator.txt), [당시 실행 캡처 9장](https://github.com/unknownamed/lgax-kitchen-sensor-android/tree/14d49f7/docs/images/screenshots). 이전 v0.2.0 화면은 [해당 커밋의 원본](https://github.com/unknownamed/lgax-kitchen-sensor-android/tree/0141018/app)과 [캡처](https://github.com/unknownamed/lgax-kitchen-sensor-android/tree/0141018/docs/images/screenshots)에 보관되어 있다.
 
 구성 목업·시나리오·와이어프레임도 새 디자인으로 맞췄다. 그림의 수치는 예시 데이터로 유지하며 실제 센서 측정이나 앱 실행 기록을 뜻하지 않는다. 실물 ESP32 연결과 Android 13 이상 기기의 테마 아이콘 모양은 기기에서 확인할 작업으로 남겼다.
+
+## 2026-10-10 · v0.3.1 버튼 크기와 시각적 안내
+
+측정 시작·중지 버튼을 필요한 폭으로 줄이고, 기록·내보내기 버튼을 가로로 배치했다. 버튼의 최소 높이는 48dp로 유지한다. 지수 글자는 52sp, 기록 개수는 28sp로 조정하고, 카드의 여백과 간격을 줄였다. 접시·물방울, 휴대폰, 문서 아이콘으로 지수와 센서·기록 영역의 역할을 구분한다.
+
+와이어프레임 네 단계에 같은 로고를 표시하고 저장 버튼을 붉은색으로 통일했다. 다운로드 목업에 `dish-dry-01.csv`·`dish-dry-02.csv`·`dish-dry-03.csv`를 예시 파일로 넣었다. 구성 그림과 사용 시나리오도 작은 버튼, 공통 로고와 예시 파일 목록으로 맞췄다. 이는 설명용 목업이며 실제 시스템 파일 선택기나 실제 실험 파일을 변경한 기록이 아니다.
+
+초기 [v0.3.1 에뮬레이터 실행](https://github.com/unknownamed/lgax-kitchen-sensor-android/actions/runs/38037251351), 코드 `d7a2e88`는 기능 검증을 통과했다. 원본 캡처 확인에서 320dp·130% 글자 크기의 가로 버튼 이름이 마지막 한 글자만 다음 줄에 표시되는 것을 발견했다. 글자를 12~15sp 범위에서 자동 조절하고 한 줄로 유지하도록 보완했다.
+
+최종 코드 `41264bf`의 [빌드 결과](https://github.com/unknownamed/lgax-kitchen-sensor-android/actions/runs/38037627848)는 성공이다. 단위 테스트 20개가 실패·오류·생략 없이 통과했고 APK 빌드와 lint를 완료했다. lint는 오류 0개, 경고 7개다. 기존 대상 버전·백업 규칙·배경 겹침 경고 3개와 새 아이콘/글자 행을 복합 drawable로 줄일 수 있다는 제안 4개다. [검증 결과 원문](logs/2026-10-10-v0.3.1-compact-checks.txt).
+
+최종 [에뮬레이터 실행](https://github.com/unknownamed/lgax-kitchen-sensor-android/actions/runs/38037627986)도 통과했다. 시작·중지·상태 배지, 가상 센서 값 기록, CSV 저장 내용 일치, 취소와 재시작 후 기록 유지, 320dp·130% 글자 크기의 버튼을 확인했다. 두 버튼의 이름이 한 줄로 보이고 전체 버튼이 화면 안에 들어오는 것을 원본 캡처와 위치 정보로 확인했다. 치명적 Runtime 예외는 없었다. [원문 결과와 CSV](logs/2026-10-10-v0.3.1-android-emulator.txt), [실행 캡처 9장](images/screenshots). 실제 ESP32는 연결하지 않았다.
 
 ## 실물 ESP32 실행 기록 · 확인 대기
 

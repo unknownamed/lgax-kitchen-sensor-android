@@ -1,0 +1,20 @@
+Run: https://github.com/unknownamed/lgax-kitchen-sensor-android/actions/runs/38037627986
+Commit: 41264bf
+Date (Korea): 2026-10-10
+Context: Android API 30 emulator virtual phone sensor; no physical ESP32 attached
+
+Android API 30 emulator
+ESP32 hardware: not connected
+App launch: passed
+Idle and phone-only status badges: passed
+Measurement start/stop UI: passed
+Virtual phone sensor record: passed
+CSV file picker, saved file equality, and save return: passed
+CSV picker cancellation preserves internal records: passed
+Record persistence after restart: passed
+320dp wide screen with 130% font scale: passed
+Runtime fatal exception: none
+
+Original app-internal CSV (virtual phone sensor):
+recorded_at_utc,temperature_c,humidity_percent,light_adc,phone_lux,phone_motion_m_s2,drying_index
+2026-10-10T08:25:27.245Z,,,,,0.003,

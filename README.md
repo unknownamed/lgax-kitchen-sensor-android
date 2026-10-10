@@ -8,21 +8,21 @@
 
 <img src="docs/images/app-icon.png" width="88" alt="붉은 바탕의 접시와 물방울 앱 아이콘">
 
-v0.3.0은 LG Red와 따뜻한 회색을 참고한 화면, 자체 접시·물방울 아이콘, 연결 상태 배지와 센서별 카드를 사용합니다. [화면 디자인 기준](docs/DESIGN_NOTES.md).
+v0.3.1은 LG Red와 따뜻한 회색을 참고한 화면, 접시·물방울 아이콘, 연결 상태 배지와 센서별 카드를 사용합니다. 측정 버튼을 짧게 배치하고 기록·내보내기 버튼을 한 줄로 정리했습니다. [화면 디자인 기준](docs/DESIGN_NOTES.md).
 
 ![접시 건조대의 온습도·빛 센서, ESP32 보드와 새 Android 화면 구성 개념도](docs/images/dishdry-sensor-sketch.png)
 
-*접시 건조대 옆 센서와 v0.3.0 앱을 연결하는 구성 목업. 화면 수치는 예시 데이터이며, 실물 장치 실행 사진이 아닙니다.*
+*접시 건조대 옆 센서와 v0.3.1 앱을 연결하는 구성 목업. 화면 수치는 예시 데이터이며, 실물 장치 실행 사진이 아닙니다.*
 
 ## 앱 실제 실행 화면
 
-v0.3.0 APK를 Android API 30 에뮬레이터에서 실행한 원본 캡처입니다. 자체 앱 아이콘, 붉은 버튼과 지수, 따뜻한 회색 바탕, 상태 배지와 흰색 센서 카드를 적용했습니다. ESP32는 연결하지 않았고, 기록 1개는 에뮬레이터의 가상 휴대폰 센서 값으로 저장한 것입니다.
+v0.3.1 APK를 Android API 30 에뮬레이터에서 실행한 원본 캡처입니다. 접시·물방울 심볼, 붉은 버튼과 지수, 따뜻한 회색 바탕, 작은 동작 버튼과 센서 카드를 적용했습니다. ESP32는 연결하지 않았고, 기록 1개는 에뮬레이터의 가상 휴대폰 센서 값으로 저장한 것입니다.
 
 | 연결 대기 | 현재 값 기록 | 시스템 CSV 저장 |
 | --- | --- | --- |
 | <img src="docs/images/screenshots/01-overview.png" width="230" alt="실제 앱 연결 대기 화면"> | <img src="docs/images/screenshots/03-record-saved.png" width="230" alt="실제 앱에서 가상 휴대폰 센서 값 한 건을 기록한 화면"> | <img src="docs/images/screenshots/04-system-export.png" width="230" alt="Android 시스템 파일 선택기의 CSV 저장 화면"> |
 
-앱 실행, 현재 값 기록, CSV 실제 파일 내용 일치, 저장·취소 후 앱 복귀, 재시작 후 기록 유지, 320dp 너비·130% 글자 크기를 확인했습니다. [전체 실행 캡처 9장](docs/images/screenshots), [실행 결과 원문](docs/logs/2026-10-10-v0.3.0-android-emulator.txt), [실행 일지](docs/RUN_LOG.md).
+앱 실행, 현재 값 기록, CSV 실제 파일 내용 일치, 저장·취소 후 앱 복귀, 재시작 후 기록 유지, 320dp 너비·130% 글자 크기를 확인했습니다. [전체 실행 캡처 9장](docs/images/screenshots), [실행 결과 원문](docs/logs/2026-10-10-v0.3.1-android-emulator.txt), [실행 일지](docs/RUN_LOG.md).
 
 현재 화면은 [LG 공식 디자인 시스템](https://www.lg.com/global/our-identity/design-system/)의 둥근 형태와 [공식 색상 가이드](https://www.lg.com/us/wonderbox/Wonderbox-GuidelinesSpecs.pdf)를 참고해 Android 기본 글꼴과 위젯에 맞게 적용했습니다. 이전 [Apple 웹디자인 분석 DESIGN.md](DESIGN.md)는 참고 기록으로 보관합니다. [적용 기준과 출처](docs/DESIGN_NOTES.md).
 
@@ -96,6 +96,8 @@ flowchart TD
 ![센서 Wi-Fi 연결, 측정값 확인, 현재 값 기록, CSV 저장으로 이어지는 4컷 사용 시나리오](docs/images/user-scenario.png)
 
 *새 화면 디자인으로 맞춘 4컷 개념 시나리오. 화면 수치와 기록 3개는 이해를 돕는 예시 데이터이며, 실물 센서 실행 기록이 아닙니다.*
+
+저장 목업의 `dish-dry-01.csv`·`dish-dry-02.csv`·`dish-dry-03.csv`는 파일 목록을 설명하는 예시입니다. 저장 화면의 로고와 붉은 버튼은 스타일을 통일한 목업 디자인이며, 실제 시스템 파일 선택기는 기기의 디자인을 따릅니다.
 
 ## 화면 와이어프레임과 사용 흐름
 
